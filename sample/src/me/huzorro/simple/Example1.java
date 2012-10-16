@@ -26,4 +26,13 @@ public class Example1 {
     public int div(int i, int j) {
         return  i / j;
     }
+    /**
+     * 
+     * @param i
+     * @param j
+     * @return result
+     */
+    public int multiply(int i, int j) {
+        return i * j;
+    }
 }
