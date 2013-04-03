@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gateway>
+	<sessions>
+		<session>
+			<id>000000</id>
+			<upstream>
+			  <host>218.206.73.70</host>
+			  <port>7895</port>
+			</upstream>
+			<downstream>
+			  <host>218.206.73.70</host>
+			  <port>7915</port>
+			</downstream>
+		</session>
+		<session>
+	        <id>999999</id>
+	        <upstream>
+	          <host>218.206.73.71</host>
+	          <port>1234</port>
+	        </upstream>
+	        <downstream>
+	          <host>218.206.73.71</host>
+	          <port>5678</port>
+	        </downstream>	   
+		</session>
+	</sessions>
+</gateway>

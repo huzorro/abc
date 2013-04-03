@@ -1,5 +1,9 @@
 package me.huzorro.simple;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+
 /**
  *
  * @author huzorro(huzorro@gmail.com)
@@ -35,4 +39,12 @@ public class Example1 {
     public int multiply(int i, int j) {
         return i * j;
     }
+    public void t() {
+        HashSet<Object> h = new HashSet<Object>();
+        LinkedList<String> t = new  LinkedList<String>();
+        for(Object s : h) {
+            
+        }
+    }
+    
 }

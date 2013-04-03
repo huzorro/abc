@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gateway>
+    <sessions>
+        <session>
+            <channelIds>901077</channelIds>
+            <upstream>
+              <host>218.206.73.70</host>
+              <port>8888</port>
+              <maxSessions>10</maxSessions>
+              <generalThreadNum>0</generalThreadNum>
+              <scheduleThreadNum>0</scheduleThreadNum>
+              <deliverQueueSize>160</deliverQueueSize>
+              <!--该参数应该单独放入对应消息队列配置文件, 如RabbitMQ-->
+              <deliverQueueNamePreffix>901077_deliver_</deliverQueueNamePreffix>
+              <!--该参数应该单独放入对应消息队列配置文件, 如RabbitMQ-->
+              <requestQueueSequence>0</requestQueueSequence>
+              <responseQueueSequence>0</responseQueueSequence>
+              <deliverQueueSequence>0</deliverQueueSequence>
+
+            </upstream>
+            <downstream>
+              <host>218.206.73.70</host>
+              <port>7915</port>
+              <maxRetry>3</maxRetry>
+              <retryWaitTime>60</retryWaitTime>
+              <maxSessions>10</maxSessions>
+              <windows>16</windows>
+              <generalThreadNum>0</generalThreadNum>
+              <scheduleThreadNum>0</scheduleThreadNum>
+              <requestQueueSize>160</requestQueueSize>
+              <responseQueueSize>0</responseQueueSize>
+              <deliverQueueSize>160</deliverQueueSize>
+              <!--该参数应该单独放入对应消息队列配置文件, 如RabbitMQ-->
+              <requestQueueNamePreffix>901077_request_</requestQueueNamePreffix>
+              <responseQueueNamePreffix>901077_response_</responseQueueNamePreffix>
+              <!--该参数应该单独放入对应消息队列配置文件, 如RabbitMQ-->
+              <requestQueueSequence>0</requestQueueSequence>
+              <responseQueueSequence>0</responseQueueSequence>
+              <deliverQueueSequence>0</deliverQueueSequence>              
+            </downstream>
+        </session>
+        <session>
+            <channelIds>901078</channelIds>
+            <upstream>
+              <host>218.206.73.71</host>
+              <port>4567</port>
+            </upstream>
+            <downstream>
+              <host>218.206.73.71</host>
+              <port>5678</port>
+            </downstream>      
+        </session>
+    </sessions>
+</gateway>
