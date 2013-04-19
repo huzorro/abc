@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="lib/logback-classic-1.0.9.jar" sourcepath="F:/java依赖包/logback-1.0.9/logback-classic-1.0.9-sources.jar"/>
 	<classpathentry kind="lib" path="lib/logback-core-1.0.9.jar" sourcepath="F:/java依赖包/logback-1.0.9/logback-core-1.0.9-sources.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.2.jar"/>
-	<classpathentry kind="lib" path="config"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar" sourcepath="F:/java依赖包/commons-lang-2.6/commons-lang-2.6-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/commons-lang-2.6/commons-lang-2.6-javadoc.jar!/"/>
@@ -52,5 +51,6 @@
 			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/commons-codec-1.7/commons-codec-1.7-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="config"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
