@@ -34,7 +34,7 @@ public class CmppConnectRequestMessageDecoder extends OneToOneDecoder {
     protected Object decode(ChannelHandlerContext ctx, Channel channel,
             Object msg) throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
-        long commandId = ((Long) message.getHeader().getCommandId()).longValue();
+        long commandId = ((Integer) message.getHeader().getCommandId()).intValue();
         if(packetType.getCommandId() != commandId) return msg;
         CmppConnectRequestMessage<ChannelBuffer> requestMessage = 
                 new CmppConnectRequestMessage<ChannelBuffer>();

@@ -10,6 +10,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
     private static final long serialVersionUID = -4245789758843785127L;
+    private Object channelIds;
     private AtomicInteger requests = new AtomicInteger();
     private Message<?> response;
     private Header<T> header;
@@ -26,8 +27,7 @@ public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
      */
     @Override
     public void setChannelIds(Object ids) {
-        // TODO Auto-generated method stub
-        
+        this.channelIds = ids;
     }
 
     /* (non-Javadoc)
@@ -35,8 +35,7 @@ public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
      */
     @Override
     public Object getChannelIds() {
-        // TODO Auto-generated method stub
-        return null;
+        return channelIds;
     }    
     /* (non-Javadoc)
      * @see me.huzorro.gateway.Message#incrementAndGetRequests()
@@ -111,5 +110,14 @@ public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
     public Object getAttachment() {
         return attachment;
     }
-
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String
+                .format("DefaultMessage [channelIds=%s, requests=%s, response=%s, header=%s]",
+                        channelIds, requests, response, header);
+    }
+    
 }

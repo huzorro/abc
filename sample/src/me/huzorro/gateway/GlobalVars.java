@@ -6,18 +6,22 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.CombinedConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author huzorro(huzorro@gmail.com)
  */
 public class GlobalVars {
-    public static CompositeConfiguration config = new CompositeConfiguration();
+    private final static Logger logger = LoggerFactory.getLogger(GlobalVars.class);
     public static DefaultConfigurationBuilder configBuilder;
+    public static CombinedConfiguration config;
     public static Map<String, SessionConfig> duplexSessionConfigMap = new HashMap<String, SessionConfig>();
     public static Map<String, SessionConfig> upstreamSessionConfigMap = new HashMap<String, SessionConfig>();
     public static Map<String, SessionConfig> downstreamSessionConfigMap = new HashMap<String, SessionConfig>();
@@ -50,5 +54,10 @@ public class GlobalVars {
     static {
         configBuilder = new DefaultConfigurationBuilder();
         configBuilder.setFileName("configuration.xml");
+        try {
+            config = configBuilder.getConfiguration(true);
+        } catch (ConfigurationException e) {
+            logger.error("config builder failed {}", e);
+        }
     }
 }

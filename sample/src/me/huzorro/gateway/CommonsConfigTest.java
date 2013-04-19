@@ -40,6 +40,7 @@ import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.util.CharsetUtil;
@@ -63,7 +64,7 @@ import com.google.common.util.concurrent.MoreExecutors;
  */
 public class CommonsConfigTest {
     private final Logger log = LoggerFactory.getLogger(CommonsConfigTest.class);
-    private CompositeConfiguration config = GlobalVars.config;
+    private CompositeConfiguration config = new CompositeConfiguration();;
     private DefaultConfigurationBuilder configBuilder = GlobalVars.configBuilder;
     /**
      * 
@@ -92,7 +93,7 @@ public class CommonsConfigTest {
         }
         
     }
-    public void useBuilder() {
+    public String useBuilder() {
 //        configBuilder.setFileName("configuration.xml");
         CombinedConfiguration cc = null;
         try {
@@ -118,7 +119,7 @@ public class CommonsConfigTest {
             
             while(true) {
             for(int i = 0; i < h.size(); i++) {
-                log.debug(xmlConfig.getString(String.format("sessions.session(%1$d).id", i)));
+                log.debug(xmlConfig.getString(String.format("sessions.session(%1$d).channelIds", i)));
                 
             }
             try {
@@ -258,29 +259,32 @@ public class CommonsConfigTest {
      * @param args
      */
     public static void main(String[] args) {
-        Message<ChannelBuffer> m = new DefaultMessage<ChannelBuffer>();
-        DefaultHead<ChannelBuffer> h = new DefaultHead<ChannelBuffer>();
-        m.setHeader(h);
-        m.getHeader().getHeadBuffer();
-        MessageFuture mf = new MessageFuture(m);
-        Collection<Integer> nodes = new LinkedList<Integer>();
-        for(int i = 0; i < 1; i++) {
-            nodes.add(new Integer(i));
-        }
-        ConsistentHash<Integer> c = new ConsistentHash<Integer>(Hashing.md5(), 100, nodes);
-        for(int i = 0; i < 10; i++) {
-            System.out.println(c.get(System.nanoTime()));
+        System.out.println(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss"));
+
+        System.out.println(Long.parseLong(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss")));
+//        Message<ChannelBuffer> m = new DefaultMessage<ChannelBuffer>();
+//        DefaultHead<ChannelBuffer> h = new DefaultHead<ChannelBuffer>();
+//        m.setHeader(h);
+//        m.getHeader().getHeadBuffer();
+//        MessageFuture mf = new MessageFuture(m);
+//        Collection<Integer> nodes = new LinkedList<Integer>();
+//        for(int i = 0; i < 1; i++) {
+//            nodes.add(new Integer(i));
+//        }
+//        ConsistentHash<Integer> c = new ConsistentHash<Integer>(Hashing.md5(), 100, nodes);
+//        for(int i = 0; i < 10; i++) {
+//            System.out.println(c.get(System.nanoTime()));
 
 //            System.out.println(CommonsConfigTest.md5HashingAlg(Integer.toString(i)) % 10);
 //            System.out.println(Hashing.consistentHash(i, 10));
-        }
+//        }
 //        new CommonsConfigTest().initConfig().t();
 //        new CommonsConfigTest().useBuilder();
 //        new CommonsConfigTest().useBuilderProp();
 //        try {
 //            Map<String, SessionConfig> m = new CmppUpstreamSessionConfigMapBuilder(
 //                    GlobalVars.configBuilder,
-//                    GlobalVars.upstreamSessionConfigMap).builder();
+//                    GlobalVars.upstreamSessionConfigMap);
 //            
 //            while(true) {
 //                for(Entry<String, SessionConfig> e : m.entrySet()) {                    
@@ -307,95 +311,95 @@ public class CommonsConfigTest {
 //        service.shutdown();
         
         
-        //测试MD5
-        System.out.println(CommonsConfigTest.strToMD5("abc"));
-        System.out.println(DigestUtils.md5Hex("abc"));
-        byte[] b = DigestUtils.md5("abc");
-        System.out.println(Hex.encodeHexString(b));
-//        ArrayUtils.addAll(array1, array2)
-        CmppConnectRequestMessage<ChannelBuffer> r = new CmppConnectRequestMessage<ChannelBuffer>();
-        r.setResponse(new CmppConnectResponseMessage<ChannelBuffer>());
-        //
-        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
-        
-        buffer.writeInt(Integer.MAX_VALUE);
-        buffer.writeBytes("中国人".getBytes(Charset.forName("GBK")));
-        buffer.writeBytes("abc".getBytes(Charset.forName("GBK")));
-        buffer.writeInt(456);
-        buffer.markReaderIndex();
-        //---------------------------------------------
-        out.println("~~~~~~");
-        out.println(buffer.readInt());
-        out.println(buffer.toString(4, 6, Charset.forName("GBK")));
-        buffer.skipBytes(6);
-        out.println(buffer.toString(10, 3, Charset.forName("GBK")));
-        buffer.skipBytes(3);
-        out.println(buffer.readInt());
-        out.println("~~~~~~");
-        long act = 4147483647L;
-        
-        byte[] actBytes = Longs.toByteArray(act);
-        
-        byte[] actUnsignedInts = ArrayUtils.subarray(actBytes, 4, 8);
-        
-        ChannelBuffer cbs = ChannelBuffers.dynamicBuffer();
-        
-        cbs.writeBytes(actUnsignedInts);
-        
-        out.println(cbs.readUnsignedInt());
-        
-        //--------------------------------
-        
-        byte[] a = new byte[4];
-        buffer.readBytes(a);
-        buffer.resetReaderIndex();
-        String ss = Hex.encodeHexString(a);
-        System.out.println(ss);
-        System.out.println(UnsignedLongs.parseUnsignedLong(ss, 16));
-        System.out.println(buffer.readUnsignedInt());
-        buffer.resetReaderIndex();
-        System.out.println(buffer.readInt());
-        
-        System.out.println(UnsignedLongs.toString(10000L, 2));
-        
-        String t = UnsignedLongs.toString(10000L, 2);
-        
-        System.out.println(UnsignedLongs.parseUnsignedLong(t, 2));
-        
-        byte[] ba = Ints.toByteArray(Integer.MAX_VALUE);
-        
-        System.out.println(ba.length + "#");
-        byte[] la = Longs.toByteArray(Integer.MAX_VALUE);
-        System.out.println(la.length);
-        
-//        ArrayUtils.remove(la, 32);
-        byte[] lb = ArrayUtils.subarray(la, 4, 8);
-        out.println("-------------------lb" + lb.length);
-        int i = Ints.fromByteArray(lb);
-        
-        
-        out.println("--------------" + i);
-        
-        //-----------------------------------------
-        BinaryCodec bc = new BinaryCodec();
-        String as = BinaryCodec.toAsciiString(a);
-        System.out.println(as);
-        System.out.println(UnsignedLongs.parseUnsignedLong(as, 2));                
-        //-----------------------------------------------------
-        
-        System.out.println(DataType.UNSIGNEDINT.getAllCommandId() ^ DataType.UNSIGNEDINT.getCommandId());
-        
-        System.out.println(me.huzorro.gateway.cmpp.Head.COMMANDID.getHeadLength());
-        
-        out.println(PacketType.CMPPCANCELREQUEST.getAllCommandId() & PacketType.CMPPACTIVETESTREQUEST.getCommandId());
-        
-        //---------------------
-        
-        
-        @SuppressWarnings("rawtypes")
-        ConsistentHashQueueGroup<BlockingQueue<Message>, Message> cq = 
-                new ConsistentHashQueueGroup<BlockingQueue<Message>, Message>(
-                        new LinkedList<BlockingQueue<Message>>());
+//        //测试MD5
+//        System.out.println(CommonsConfigTest.strToMD5("abc"));
+//        System.out.println(DigestUtils.md5Hex("abc"));
+//        byte[] b = DigestUtils.md5("abc");
+//        System.out.println(Hex.encodeHexString(b));
+////        ArrayUtils.addAll(array1, array2)
+//        CmppConnectRequestMessage<ChannelBuffer> r = new CmppConnectRequestMessage<ChannelBuffer>();
+//        r.setResponse(new CmppConnectResponseMessage<ChannelBuffer>());
+//        //
+//        ChannelBuffer buffer = ChannelBuffers.dynamicBuffer();
+//        
+//        buffer.writeInt(Integer.MAX_VALUE);
+//        buffer.writeBytes("中国人".getBytes(Charset.forName("GBK")));
+//        buffer.writeBytes("abc".getBytes(Charset.forName("GBK")));
+//        buffer.writeInt(456);
+//        buffer.markReaderIndex();
+//        //---------------------------------------------
+//        out.println("~~~~~~");
+//        out.println(buffer.readInt());
+//        out.println(buffer.toString(4, 6, Charset.forName("GBK")));
+//        buffer.skipBytes(6);
+//        out.println(buffer.toString(10, 3, Charset.forName("GBK")));
+//        buffer.skipBytes(3);
+//        out.println(buffer.readInt());
+//        out.println("~~~~~~");
+//        long act = 4147483647L;
+//        
+//        byte[] actBytes = Longs.toByteArray(act);
+//        
+//        byte[] actUnsignedInts = ArrayUtils.subarray(actBytes, 4, 8);
+//        
+//        ChannelBuffer cbs = ChannelBuffers.dynamicBuffer();
+//        
+//        cbs.writeBytes(actUnsignedInts);
+//        
+//        out.println(cbs.readUnsignedInt());
+//        
+//        //--------------------------------
+//        
+//        byte[] a = new byte[4];
+//        buffer.readBytes(a);
+//        buffer.resetReaderIndex();
+//        String ss = Hex.encodeHexString(a);
+//        System.out.println(ss);
+//        System.out.println(UnsignedLongs.parseUnsignedLong(ss, 16));
+//        System.out.println(buffer.readUnsignedInt());
+//        buffer.resetReaderIndex();
+//        System.out.println(buffer.readInt());
+//        
+//        System.out.println(UnsignedLongs.toString(10000L, 2));
+//        
+//        String t = UnsignedLongs.toString(10000L, 2);
+//        
+//        System.out.println(UnsignedLongs.parseUnsignedLong(t, 2));
+//        
+//        byte[] ba = Ints.toByteArray(Integer.MAX_VALUE);
+//        
+//        System.out.println(ba.length + "#");
+//        byte[] la = Longs.toByteArray(Integer.MAX_VALUE);
+//        System.out.println(la.length);
+//        
+////        ArrayUtils.remove(la, 32);
+//        byte[] lb = ArrayUtils.subarray(la, 4, 8);
+//        out.println("-------------------lb" + lb.length);
+//        int i = Ints.fromByteArray(lb);
+//        
+//        
+//        out.println("--------------" + i);
+//        
+//        //-----------------------------------------
+//        BinaryCodec bc = new BinaryCodec();
+//        String as = BinaryCodec.toAsciiString(a);
+//        System.out.println(as);
+//        System.out.println(UnsignedLongs.parseUnsignedLong(as, 2));                
+//        //-----------------------------------------------------
+//        
+//        System.out.println(DataType.UNSIGNEDINT.getAllCommandId() ^ DataType.UNSIGNEDINT.getCommandId());
+//        
+//        System.out.println(me.huzorro.gateway.cmpp.Head.COMMANDID.getHeadLength());
+//        
+//        out.println(PacketType.CMPPCANCELREQUEST.getAllCommandId() & PacketType.CMPPACTIVETESTREQUEST.getCommandId());
+//        
+//        //---------------------
+//        
+//        
+//        @SuppressWarnings("rawtypes")
+//        ConsistentHashQueueGroup<BlockingQueue<Message>, Message> cq = 
+//                new ConsistentHashQueueGroup<BlockingQueue<Message>, Message>(
+//                        new LinkedList<BlockingQueue<Message>>());
         
     }
     

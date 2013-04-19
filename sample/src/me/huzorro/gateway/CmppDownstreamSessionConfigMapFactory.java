@@ -2,7 +2,7 @@ package me.huzorro.gateway;
 
 import java.util.Map;
 
-import org.apache.commons.configuration.DefaultConfigurationBuilder;
+import org.apache.commons.configuration.CombinedConfiguration;
 
 /**
  *
@@ -17,7 +17,7 @@ public class CmppDownstreamSessionConfigMapFactory<T extends Map<String, Session
      */
     @SuppressWarnings("unchecked")
     public CmppDownstreamSessionConfigMapFactory(
-            DefaultConfigurationBuilder configurationBuilder,
+            CombinedConfiguration configurationBuilder,
             Map<String, SessionConfig> sessionConfigMap) {
             this(configurationBuilder, sessionConfigMap, "downstream", (Class<E>) CmppDownstreamSessionConfig.class);
     }
@@ -28,7 +28,7 @@ public class CmppDownstreamSessionConfigMapFactory<T extends Map<String, Session
      * @param sessionConfig
      */
     public CmppDownstreamSessionConfigMapFactory(
-            DefaultConfigurationBuilder configurationBuilder,
+            CombinedConfiguration configurationBuilder,
             Map<String, SessionConfig> sessionConfigMap, String sessionType,
             Class<E> sessionConfig) {
         super(configurationBuilder, sessionConfigMap, sessionType, sessionConfig);

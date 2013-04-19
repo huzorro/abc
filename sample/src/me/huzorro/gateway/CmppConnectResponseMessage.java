@@ -1,5 +1,7 @@
 package me.huzorro.gateway;
 
+import java.util.Arrays;
+
 import org.apache.commons.codec.binary.Hex;
 import org.jboss.netty.buffer.ChannelBuffer;
 
@@ -10,21 +12,21 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public class CmppConnectResponseMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
     private static final long serialVersionUID = -5010314567064353091L;
-    private int status;
+    private long status;
     private byte[] authenticatorISMG;
-    private byte version;
+    private short version;
     
     /**
      * @return the status
      */
-    public int getStatus() {
+    public long getStatus() {
         return status;
     }
 
     /**
      * @param status the status to set
      */
-    public void setStatus(int status) {
+    public void setStatus(long status) {
         this.status = status;
     }
 
@@ -45,17 +47,16 @@ public class CmppConnectResponseMessage<T extends ChannelBuffer> extends Default
     /**
      * @return the version
      */
-    public byte getVersion() {
+    public short getVersion() {
         return version;
     }
 
     /**
      * @param version the version to set
      */
-    public void setVersion(byte version) {
+    public void setVersion(short version) {
         this.version = version;
     }
-
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -63,8 +64,20 @@ public class CmppConnectResponseMessage<T extends ChannelBuffer> extends Default
     @Override
     public String toString() {
         return String
-                .format("CmppConnectResponseMessage [status=%s, authenticatorISMG=%s, version=%s]",
-                        status, Hex.encodeHexString(authenticatorISMG), version);
+                .format("CmppConnectResponseMessage [status=%s, authenticatorISMG=%s, version=%s, toString()=%s]",
+                        status, Arrays.toString(authenticatorISMG), version,
+                        super.toString());
     }
+
     
+//    /* (non-Javadoc)
+//     * @see java.lang.Object#toString()
+//     */
+//    @Override
+//    public String toString() {
+//        return String
+//                .format("CmppConnectResponseMessage [status=%s, authenticatorISMG=%s, version=%s]",
+//                        status, Hex.encodeHexString(authenticatorISMG), version);
+//    }
+//    
 }

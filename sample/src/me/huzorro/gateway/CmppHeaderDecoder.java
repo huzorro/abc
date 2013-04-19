@@ -37,10 +37,15 @@ public class CmppHeaderDecoder extends FrameDecoder {
         Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
         header.setHeadBuffer(headBuffer.copy());
         
-        header.setCommandId(headBuffer.readUnsignedInt());
-        header.setHeadLength(Head.COMMANDID.getHeadLength());
         header.setPacketLength(headBuffer.readUnsignedInt());
+//        header.setCommandId(headBuffer.readUnsignedInt());
+        header.setCommandId(headBuffer.readInt());
         header.setSequenceId(headBuffer.readUnsignedInt());
+        
+        
+        header.setHeadLength(Head.COMMANDID.getHeadLength());
+        
+        
         header.setBodyLength(header.getPacketLength() - header.getHeadLength());
         
         if(buffer.readableBytes() < header.getBodyLength()) {

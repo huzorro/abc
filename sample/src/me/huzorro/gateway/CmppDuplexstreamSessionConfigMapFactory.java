@@ -2,7 +2,7 @@ package me.huzorro.gateway;
 
 import java.util.Map;
 
-import org.apache.commons.configuration.DefaultConfigurationBuilder;
+import org.apache.commons.configuration.CombinedConfiguration;
 
 /**
  *
@@ -17,7 +17,7 @@ public class CmppDuplexstreamSessionConfigMapFactory<T extends Map<String, Sessi
      */
     @SuppressWarnings("unchecked")
     public CmppDuplexstreamSessionConfigMapFactory(
-            DefaultConfigurationBuilder configurationBuilder,
+            CombinedConfiguration configurationBuilder,
             Map<String, SessionConfig> sessionConfigMap) {
         this(configurationBuilder, sessionConfigMap, "duplexstream", (Class<E>) CmppDuplexstreamSessionConfig.class);
     }
@@ -29,7 +29,7 @@ public class CmppDuplexstreamSessionConfigMapFactory<T extends Map<String, Sessi
      * @param sessionConfig
      */
     public CmppDuplexstreamSessionConfigMapFactory(
-            DefaultConfigurationBuilder configurationBuilder,
+            CombinedConfiguration configurationBuilder,
             Map<String, SessionConfig> sessionConfigMap, String sessionType,
             Class<E> sessionConfig) {
         super(configurationBuilder, sessionConfigMap, sessionType, sessionConfig);

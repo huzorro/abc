@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.commons.configuration.ConfigurationException;
 import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 
@@ -20,10 +21,10 @@ public class DefaultGlobalVarsInitialize implements GlobalVarsInitialize {
      * @see me.huzorro.gateway.GlobalVarsInitialize#sessionConfigInitialize()
      */
     @Override
-    public GlobalVarsInitialize sessionConfigInitialize() {
-        new UpstreamSessionConfigMapFactory<Map<String,SessionConfig>, UpstreamSessionConfig>(GlobalVars.configBuilder, GlobalVars.upstreamSessionConfigMap);
-        new DownstreamSessionConfigMapFactory<Map<String,SessionConfig>, DownstreamSessionConfig>(GlobalVars.configBuilder, GlobalVars.downstreamSessionConfigMap);
-        new DuplexstreamSessionConfigMapFactory<Map<String,SessionConfig>, DuplexstreamSessionConfig>(GlobalVars.configBuilder, GlobalVars.duplexSessionConfigMap);
+    public GlobalVarsInitialize sessionConfigInitialize() throws ConfigurationException, InstantiationException, IllegalAccessException {
+        new UpstreamSessionConfigMapFactory<Map<String,SessionConfig>, UpstreamSessionConfig>(GlobalVars.config, GlobalVars.upstreamSessionConfigMap).create();
+        new DownstreamSessionConfigMapFactory<Map<String,SessionConfig>, DownstreamSessionConfig>(GlobalVars.config, GlobalVars.downstreamSessionConfigMap).create();
+        new DuplexstreamSessionConfigMapFactory<Map<String,SessionConfig>, DuplexstreamSessionConfig>(GlobalVars.config, GlobalVars.duplexSessionConfigMap).create();
         return this;
     }
 

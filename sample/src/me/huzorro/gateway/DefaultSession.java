@@ -78,6 +78,7 @@ public  class DefaultSession implements Session {
                 }
             }
         });
+        this.channel.setAttachment(this);
     }
 
     /* (non-Javadoc)

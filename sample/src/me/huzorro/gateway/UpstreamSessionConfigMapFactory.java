@@ -2,7 +2,7 @@ package me.huzorro.gateway;
 
 import java.util.Map;
 
-import org.apache.commons.configuration.DefaultConfigurationBuilder;
+import org.apache.commons.configuration.CombinedConfiguration;
 
 /**
  *
@@ -13,9 +13,9 @@ public class UpstreamSessionConfigMapFactory<T extends Map<String, SessionConfig
         SessionConfigMapFactory<T, E> {
     @SuppressWarnings("unchecked")
     public UpstreamSessionConfigMapFactory(
-            DefaultConfigurationBuilder configurationBuilder,
+            CombinedConfiguration configuration,
             Map<String, SessionConfig> sessionConfigMap) {
-        this(configurationBuilder, sessionConfigMap, "upstream", (Class<E>) UpstreamSessionConfig.class);
+        this(configuration, sessionConfigMap, "upstream", (Class<E>) UpstreamSessionConfig.class);
     }
     /**
      * @param configurationBuilder
@@ -24,10 +24,10 @@ public class UpstreamSessionConfigMapFactory<T extends Map<String, SessionConfig
      * @param classz
      */
     public UpstreamSessionConfigMapFactory(
-            DefaultConfigurationBuilder configurationBuilder,
+            CombinedConfiguration configuration,
             Map<String, SessionConfig> sessionConfigMap, String sessionType,
             Class<E> classz) {
-        super(configurationBuilder, sessionConfigMap, sessionType, classz);
+        super(configuration, sessionConfigMap, sessionType, classz);
     }
 
 }

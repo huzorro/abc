@@ -7,7 +7,12 @@ import org.jboss.netty.buffer.ChannelBuffer;
  * @author huzorro(huzorro@gmail.com)
  */
 public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
-
+    private long headLength;
+    private long packetLength;
+    private long bodyLength;
+    private Object commandId;
+    private Object sequenceId;
+    private T headBuffer;
     /**
      * 
      */
@@ -20,8 +25,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public void setHeadLength(long length) {
-        // TODO Auto-generated method stub
-        
+        this.headLength = length;
     }
 
     /* (non-Javadoc)
@@ -29,8 +33,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public long getHeadLength() {
-        // TODO Auto-generated method stub
-        return 0;
+        return headLength;
     }
 
     /* (non-Javadoc)
@@ -38,8 +41,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public void setPacketLength(long length) {
-        // TODO Auto-generated method stub
-        
+        this.packetLength = length;
     }
 
     /* (non-Javadoc)
@@ -47,8 +49,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public long getPacketLength() {
-        // TODO Auto-generated method stub
-        return 0;
+        return packetLength;
     }
 
     /* (non-Javadoc)
@@ -56,8 +57,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public void setBodyLength(long length) {
-        // TODO Auto-generated method stub
-        
+        this.bodyLength = length;
     }
 
     /* (non-Javadoc)
@@ -65,8 +65,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public long getBodyLength() {
-        // TODO Auto-generated method stub
-        return 0;
+        return bodyLength;
     }
 
     /* (non-Javadoc)
@@ -74,8 +73,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public void setCommandId(Object commandId) {
-        // TODO Auto-generated method stub
-        
+        this.commandId = commandId;
     }
 
     /* (non-Javadoc)
@@ -83,8 +81,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public Object getCommandId() {
-        // TODO Auto-generated method stub
-        return null;
+        return commandId;
     }
 
 
@@ -93,8 +90,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public void setSequenceId(Object transitionId) {
-        // TODO Auto-generated method stub
-        
+        this.sequenceId = transitionId;
     }
 
     /* (non-Javadoc)
@@ -102,8 +98,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public Object getSequenceId() {
-        // TODO Auto-generated method stub
-        return null;
+        return sequenceId;
     }
 
     /* (non-Javadoc)
@@ -111,8 +106,7 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public void setHeadBuffer(T buffer) {
-        // TODO Auto-generated method stub
-        
+        this.headBuffer = buffer;
     }
 
     /* (non-Javadoc)
@@ -120,8 +114,18 @@ public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
      */
     @Override
     public T getHeadBuffer() {
-        // TODO Auto-generated method stub
-        return null;
+        return headBuffer;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String
+                .format("DefaultHead [headLength=%s, packetLength=%s, bodyLength=%s, commandId=%s, sequenceId=%s]",
+                        headLength, packetLength, bodyLength, commandId,
+                        sequenceId);
+    }
+    
 }

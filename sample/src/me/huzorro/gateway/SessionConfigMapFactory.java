@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
@@ -19,32 +18,29 @@ import org.slf4j.LoggerFactory;
  */
 public class SessionConfigMapFactory<T extends Map<String, SessionConfig>, E extends SessionConfig> implements Factory<T> {
     private final Logger logger = LoggerFactory.getLogger(SessionConfigMapFactory.class);
-    private DefaultConfigurationBuilder configBuilder;
+    private CombinedConfiguration  config;
     private Map<String, SessionConfig> sessionConfigMap;
     private String sessionType;
     private Class<E> sessionConfig;
 
     public SessionConfigMapFactory(
-            DefaultConfigurationBuilder configurationBuilder,
+            CombinedConfiguration config,
             Map<String, SessionConfig> sessionConfigMap,
             String sessionType,
             Class<E> sessionConfig) {
-        this.configBuilder = configurationBuilder;
+        this.config = config;
         this.sessionConfigMap = sessionConfigMap;
         this.sessionType = sessionType;
         this.sessionConfig = sessionConfig;
     }
-    
 
     /* (non-Javadoc)
      * @see me.huzorro.gateway.Factory#create()
      */
     @Override
     @SuppressWarnings("unchecked")
-    public T create() throws ConfigurationException, InstantiationException, IllegalAccessException {
-        CombinedConfiguration cc = null;        
-        cc = configBuilder.getConfiguration(true);
-        XMLConfiguration xmlConfig = (XMLConfiguration) cc.getConfiguration("session");
+    public T  create() throws ConfigurationException, InstantiationException, IllegalAccessException{
+        XMLConfiguration xmlConfig = (XMLConfiguration) config.getConfiguration("session");
         xmlConfig.addConfigurationListener(new ConfigurationListener() {
             @Override
             public void configurationChanged(ConfigurationEvent event) {
@@ -55,11 +51,11 @@ public class SessionConfigMapFactory<T extends Map<String, SessionConfig>, E ext
         });
         HierarchicalConfiguration sub = xmlConfig.configurationAt("sessions");
         List<HierarchicalConfiguration>  subList= sub.configurationsAt("session");
-        for(int i = 0; i < subList.size(); i++) {
+        for(int i = 0; i < subList.size(); i++) {            
             E config = sessionConfig.newInstance();
             config.setAttPreffix(String.format("sessions.session(%1$d).%2$s", i, sessionType));
             config.setConfiguration(xmlConfig);
-            config.setChannelIds(subList.get(i).getString("id"));
+            config.setChannelIds(subList.get(i).getString("channelIds"));
             sessionConfigMap.put(config.getChannelIds(), config);
             logger.debug("{}", config);
         }

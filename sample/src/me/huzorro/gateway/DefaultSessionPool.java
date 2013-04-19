@@ -23,7 +23,7 @@ public class DefaultSessionPool implements SessionPool {
     /**
      * 
      */
-    public DefaultSessionPool() {
+    public DefaultSessionPool() {        
     }
     
     /* (non-Javadoc)
@@ -41,7 +41,7 @@ public class DefaultSessionPool implements SessionPool {
         session.getCloseFuture().addListener(new QFutureListener() {
             @Override
             public void onComplete(QFuture future) {
-                if(future.isSuccess()) sessionGroup.remove(session);
+                if(future.isSuccess()) remove(session);
             }
         });
         Object asKey = channelIdsAsKey ? 
@@ -66,7 +66,7 @@ public class DefaultSessionPool implements SessionPool {
      */
     @Override
     public void remove(Session session) {
-        sessionGroup.get(session.getConfig()).remove(session);
+        sessionGroup.get(session.getConfig().getChannelIds()).remove(session);
     }
 
     /* (non-Javadoc)

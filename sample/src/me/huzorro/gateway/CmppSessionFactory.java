@@ -24,14 +24,14 @@ public class CmppSessionFactory<T extends CmppSession> extends DefaultSessionFac
      */
     public CmppSessionFactory(
             NettyTcpClient<ChannelFuture> nettyTcpClient,
-            Message<?> loginRequestMessage,
+            Factory<?> messageFactory,
             SessionConfig config,
             ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue,
             ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue,
             ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue,
             ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueue,
             ScheduledExecutorService scheduleExecutor, SessionPool sessionPool) {
-        super(nettyTcpClient, loginRequestMessage, config, requestQueue, responseQueue,
+        super(nettyTcpClient, messageFactory, config, requestQueue, responseQueue,
                 deliverQueue, messageQueue, scheduleExecutor, sessionPool);
     }
 

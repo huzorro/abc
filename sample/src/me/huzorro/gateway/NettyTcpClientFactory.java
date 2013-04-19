@@ -41,6 +41,7 @@ public class NettyTcpClientFactory<T extends NettyTcpClient<ChannelFuture>> impl
             ExecutorService boss,
             ExecutorService work) {
         this.serverAddress = serverAddress;
+        this.bootstrap = bootstrap;
         bootstrap.setFactory(new NioClientSocketChannelFactory(boss, work));
         bootstrap.setPipelineFactory(channelPipelineFactory);
         bootstrap.setOption("tcpNoDelay", true);

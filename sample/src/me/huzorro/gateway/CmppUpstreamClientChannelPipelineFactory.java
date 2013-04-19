@@ -2,6 +2,7 @@ package me.huzorro.gateway;
 
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
 
 /**
  *
@@ -22,8 +23,18 @@ public class CmppUpstreamClientChannelPipelineFactory implements
      */
     @Override
     public ChannelPipeline getPipeline() throws Exception {
-        // TODO Auto-generated method stub
-        return null;
+        ChannelPipeline pipeline = Channels.pipeline();
+        
+        pipeline.addLast("CmppHeaderDecoder", new CmppHeaderDecoder());
+
+
+        pipeline.addLast("CmppConnectResponseMessageDecoder", new CmppConnectResponseMessageDecoder());
+        pipeline.addLast("CmppConnectRequestMessageEncoder", new CmppConnectRequestMessageEncoder());    
+        
+        pipeline.addLast("CmppHeaderEncoder", new CmppHeaderEncoder());
+        
+        pipeline.addLast("CmppConnectResponseMessageHandler", new CmppConnectResponseMessageHandler());
+        return pipeline;
     }
 
 }

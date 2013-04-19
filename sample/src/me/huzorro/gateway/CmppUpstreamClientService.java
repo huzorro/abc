@@ -8,12 +8,15 @@ import org.jboss.netty.bootstrap.ClientBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author huzorro(huzorro@gmail.com)
  */
 public class CmppUpstreamClientService implements Service {
+    private final Logger logger = LoggerFactory.getLogger(CmppUpstreamClientService.class);
     private Map<String, SessionConfig> configMap;
     private Map<SessionConfig, ClientBootstrap> clientBootstrapMap;
     private Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> requestMsgQueueMap;
@@ -58,6 +61,12 @@ public class CmppUpstreamClientService implements Service {
      */
     @Override
     public void run() {
+        try {
+            process();
+        } catch (Exception e) {
+            logger.error("Cmpp Upstream Client Service failed {}", e);
+            Runtime.getRuntime().exit(-1);
+        }
     }
 
     /* (non-Javadoc)
@@ -71,16 +80,19 @@ public class CmppUpstreamClientService implements Service {
                     new NettyTcpClientFactory<NettyTcpClient<ChannelFuture>>(
                             config.getHost(), config.getPort(), pipelineFactory, clientBootstrapMap.get(config));
             NettyTcpClient<ChannelFuture> tcpClient = tcpClientFactory.create();
+            
+            CmppConnectRequestMessageFactory<CmppConnectRequestMessage<ChannelBuffer>> connectRequestMessageFacotry = 
+                    new CmppConnectRequestMessageFactory<CmppConnectRequestMessage<ChannelBuffer>>((CmppUpstreamSessionConfig) config);
             CmppSessionFactory<CmppSession> sessionFactory = new CmppSessionFactory<CmppSession>(
                     tcpClient, 
-                    new DefaultMessage<ChannelBuffer>(), 
+                    connectRequestMessageFacotry, 
                     config, 
                     requestMsgQueueMap.get(config), 
                     responseMsgQueueMap.get(config),
                     deliverMsgQueueMap.get(config), 
                     messageQueueMap.get(config),
                     scheduleExecutorMap.get(config),
-                    sessionPoolMap.get(config));            
+                    sessionPoolMap.get(configMap));   
             for(int i = 0; i < config.getMaxSessions(); i++) {
                 sessionFactory.create();
             }

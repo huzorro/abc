@@ -53,6 +53,27 @@ public class DefaultSessionConfig implements SessionConfig {
         return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "port"));
     }
     /* (non-Javadoc)
+     * @see me.huzorro.gateway.SessionConfig#getUser()
+     */
+    @Override
+    public String getUser() {
+        return configuration.getString(String.format("%1$s.%2$s", attPreffix, "user"));
+    }
+    /* (non-Javadoc)
+     * @see me.huzorro.gateway.SessionConfig#getPasswd()
+     */
+    @Override
+    public String getPasswd() {
+        return configuration.getString(String.format("%1$s.%2$s", attPreffix, "passwd"));
+    }    
+    /* (non-Javadoc)
+     * @see me.huzorro.gateway.SessionConfig#getVersion()
+     */
+    @Override
+    public short getVersion() {
+        return configuration.getShort(String.format("%1$s.%2$s", attPreffix, "version"));
+    }    
+    /* (non-Javadoc)
      * @see me.huzorro.gateway.SessionConfig#getAttPreffix()
      */
     @Override
@@ -250,5 +271,22 @@ public class DefaultSessionConfig implements SessionConfig {
     public int getDeliverQueueSequence() {
         return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "deliverQueueSequence"));
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return String
+                .format("DefaultSessionConfig [channelIds=%s, attPreffix=%s, configuration=%s, attachment=%s, getChannelIds()=%s, getHost()=%s, getPort()=%s, getAttPreffix()=%s, getConfiguration()=%s, getAttachment()=%s, getMaxRetry()=%s, getRetryWaitTime()=%s, getMaxSessions()=%s, getWindows()=%s, getGeneralThreadNum()=%s, getScheduleThreadNum()=%s, getRequestQueueSize()=%s, getResponseQueueSize()=%s, getDeliverQueueSize()=%s, getRequestQueueSequence()=%s, getResponseQueueSequence()=%s, getDeliverQueueSequence()=%s]",
+                        channelIds, attPreffix, configuration, attachment,
+                        getChannelIds(), getHost(), getPort(), getAttPreffix(),
+                        getConfiguration(), getAttachment(), getMaxRetry(),
+                        getRetryWaitTime(), getMaxSessions(), getWindows(),
+                        getGeneralThreadNum(), getScheduleThreadNum(),
+                        getRequestQueueSize(), getResponseQueueSize(),
+                        getDeliverQueueSize(), getRequestQueueSequence(),
+                        getResponseQueueSequence(), getDeliverQueueSequence());
+    }
 
+    
 }

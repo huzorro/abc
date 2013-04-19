@@ -4,7 +4,7 @@ package me.huzorro.gateway;
  *
  * @author huzorro(huzorro@gmail.com)
  */
-public class ServiceShutdownHook extends Thread  {
+public class ServiceShutdownHook implements Runnable  {
 
     /* (non-Javadoc)
      * @see java.lang.Thread#run()

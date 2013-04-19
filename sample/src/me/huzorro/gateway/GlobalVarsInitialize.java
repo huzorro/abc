@@ -7,7 +7,7 @@ package me.huzorro.gateway;
 public interface GlobalVarsInitialize {
 
     
-    public GlobalVarsInitialize sessionConfigInitialize();
+    public GlobalVarsInitialize sessionConfigInitialize() throws Exception;
     
     public GlobalVarsInitialize sessionPoolInitialize(); 
     

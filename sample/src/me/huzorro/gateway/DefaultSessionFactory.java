@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultSessionFactory<T extends DefaultSession> implements Factory<T> {
     private static final Logger logger = LoggerFactory.getLogger(DefaultSessionFactory.class);
     private NettyTcpClient<ChannelFuture> nettyTcpClient;
-    private Message<?> loginRequestMessage;
+    private Factory<?> messageFactory;
     private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue;
     private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue;
     private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue;
@@ -26,7 +26,7 @@ public class DefaultSessionFactory<T extends DefaultSession> implements Factory<
 
     public DefaultSessionFactory(
             NettyTcpClient<ChannelFuture> nettyTcpClient, 
-            Message<?> loginRequestMessage,
+            Factory<?> messageFactory,
             SessionConfig config,
             ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue,
             ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue,
@@ -35,7 +35,7 @@ public class DefaultSessionFactory<T extends DefaultSession> implements Factory<
             ScheduledExecutorService scheduleExecutor,
             SessionPool sessionPool) {
         this.nettyTcpClient = nettyTcpClient;
-        this.loginRequestMessage = loginRequestMessage;
+        this.messageFactory = messageFactory;
         this.config = config;
         this.requestQueue = requestQueue;
         this.responseQueue = responseQueue;
@@ -50,9 +50,9 @@ public class DefaultSessionFactory<T extends DefaultSession> implements Factory<
      */
     @Override
     @SuppressWarnings("unchecked")
-    public T create() {
+    public T create() throws Exception {
         ChannelFuture future = nettyTcpClient.connect();
-        Channel channel = future.getChannel();
+        Channel channel = future.awaitUninterruptibly().getChannel();
         final DefaultSession session = new DefaultSession(channel, 
                 requestQueue, responseQueue, deliverQueue, messageQueue, scheduleExecutor, config);
         session.getLoginFuture().addListener(new QFutureListener() {
@@ -62,14 +62,15 @@ public class DefaultSessionFactory<T extends DefaultSession> implements Factory<
                 // TODO Auto-generated method stub
                 if(future.isSuccess())
                     try {
-                        sessionPool.put(session, false);
+                        sessionPool.put(session, true);
                     } catch (Exception e) {
                         logger.error("put session to session pool failed {}", e);
                     }
             }
         });
         if(channel.isWritable()) {
-            channel.write(loginRequestMessage);            
+            Message<?> message = (Message<?>) messageFactory.create();
+            channel.write(message);            
         }
         return (T)session;
     }
