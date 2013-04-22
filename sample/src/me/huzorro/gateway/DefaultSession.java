@@ -219,6 +219,10 @@ public  class DefaultSession implements Session {
     public SessionLoginFuture getLoginFuture() {
         return loginFuture;
     }
+	@Override
+	public boolean isWindowFull() {
+		return requestMap.size() >= config.getWindows();
+	}
     
 
 }
