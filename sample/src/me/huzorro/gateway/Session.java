@@ -19,6 +19,7 @@ public interface Session {
     public Object getAttachment();
     public void close() throws Exception;
     public boolean isClosed();
+    public boolean isWindowFull();
     public SessionCloseFuture getCloseFuture();
     public SessionLoginFuture getLoginFuture();
 }
