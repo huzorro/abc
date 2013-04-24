@@ -27,7 +27,7 @@ public class DefaultRequestMessageSubmitProcessor implements Processor {
      */
     @Override
     public void process() throws Exception {
-        while(!session.isClosed()) {
+        while(null != session && !session.isClosed()) {
             MessageFuture future = requestQueue.take();
             session.writeRequestAndScheduleTask(future);
         }

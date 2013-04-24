@@ -74,7 +74,7 @@ public class CmppConnectRequestMessage<T extends ChannelBuffer> extends DefaultM
         return String
                 .format("CmppConnectRequestMessage [sourceAddr=%s, authenticatorSource=%s, version=%s, timestamp=%s]",
                         sourceAddr, Hex.encodeHexString(authenticatorSource),
-                        version, timestamp);
+                        version, timestamp, super.toString());
     }
     
 }

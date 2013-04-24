@@ -48,12 +48,7 @@ public class CmppConnectResponseMessageHandler extends
         } else {
             session.close();
         }
-        
-        int s = GlobalVars.sessionPoolMap.get(GlobalVars.upstreamSessionConfigMap).size("901077");
-        logger.debug("{}", s);
-        logger.debug(message.toString());
-        
-        session.close();
+        logger.info(message.toString());
         super.messageReceived(ctx, e);
     }
     

@@ -9,7 +9,7 @@ import org.jboss.netty.channel.ChannelFuture;
  *
  * @author huzorro(huzorro@gmail.com)
  */
-public class CmppSessionFactory<T extends CmppSession> extends DefaultSessionFactory<T> {
+public class CmppClientSessionFactory<T extends CmppSession> extends DefaultClientSessionFactory<T> {
 
     /**
      * @param nettyTcpClient
@@ -22,7 +22,7 @@ public class CmppSessionFactory<T extends CmppSession> extends DefaultSessionFac
      * @param scheduleExecutor
      * @param sessionPool
      */
-    public CmppSessionFactory(
+    public CmppClientSessionFactory(
             NettyTcpClient<ChannelFuture> nettyTcpClient,
             Factory<?> messageFactory,
             SessionConfig config,

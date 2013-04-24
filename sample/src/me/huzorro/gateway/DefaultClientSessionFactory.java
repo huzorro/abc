@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author huzorro(huzorro@gmail.com)
  */
-public class DefaultSessionFactory<T extends DefaultSession> implements Factory<T> {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultSessionFactory.class);
+public class DefaultClientSessionFactory<T extends DefaultSession> implements Factory<T> {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultClientSessionFactory.class);
     private NettyTcpClient<ChannelFuture> nettyTcpClient;
     private Factory<?> messageFactory;
     private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue;
@@ -24,7 +24,7 @@ public class DefaultSessionFactory<T extends DefaultSession> implements Factory<
     private SessionPool sessionPool;
     private SessionConfig config;
 
-    public DefaultSessionFactory(
+    public DefaultClientSessionFactory(
             NettyTcpClient<ChannelFuture> nettyTcpClient, 
             Factory<?> messageFactory,
             SessionConfig config,

@@ -128,7 +128,7 @@ public  class DefaultSession implements Session {
      */
     @Override
     public void writeRequestAndScheduleTask(final MessageFuture messageFuture) throws InterruptedException {
-        if(messageFuture.getMessage().incrementAndGetRequests() > config.getMaxRetry()) {
+        if(messageFuture.getMessage().getRequests() > config.getMaxRetry()) {
             logger.info("The request to send a message number has reached the maximum limit {}", messageFuture.getMessage().getRequests());
             logger.info("session closing");
             close();

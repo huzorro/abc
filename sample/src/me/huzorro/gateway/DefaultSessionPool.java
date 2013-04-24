@@ -33,6 +33,19 @@ public class DefaultSessionPool implements SessionPool {
     public Session take(Object channelIds) throws InterruptedException {
         return pool.get(channelIds).take();
     }
+	@Override
+	public Session checkout(Object channelIds) throws Exception {
+		BlockingQueue<Session> queueOfPool = pool.get(channelIds);
+		for(Session session : queueOfPool) {
+			if(null == session || session.isClosed()) {
+				queueOfPool.remove(session);
+				continue;
+			}
+			if(null != session && !session.isWindowFull()) return queueOfPool.take();
+		}
+		return null;
+	}
+
     /* (non-Javadoc)
      * @see me.huzorro.gateway.SessionPool#put(me.huzorro.gateway.Session)
      */
@@ -60,7 +73,16 @@ public class DefaultSessionPool implements SessionPool {
             sessionGroup.put(asKey, queueOfGroup);
         }
     }
-
+    
+	@Override
+	public void checkin(Session session, boolean channelIdsAsKey)
+			throws Exception {
+        Object asKey = channelIdsAsKey ? 
+                session.getConfig().getChannelIds() : 
+                    session.getConfig();
+        BlockingQueue<Session> queueOfPool = pool.get(asKey);
+        queueOfPool.put(session);
+	}  
     /* (non-Javadoc)
      * @see me.huzorro.gateway.SessionPool#remove(me.huzorro.gateway.SessionConfig, me.huzorro.gateway.Session)
      */
@@ -112,7 +134,5 @@ public class DefaultSessionPool implements SessionPool {
     public int size(Object channelIds) {
         return sessionGroup.get(channelIds).size();
     }
-
- 
 
 }

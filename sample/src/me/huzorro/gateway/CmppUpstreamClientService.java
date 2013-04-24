@@ -83,7 +83,7 @@ public class CmppUpstreamClientService implements Service {
             
             CmppConnectRequestMessageFactory<CmppConnectRequestMessage<ChannelBuffer>> connectRequestMessageFacotry = 
                     new CmppConnectRequestMessageFactory<CmppConnectRequestMessage<ChannelBuffer>>((CmppUpstreamSessionConfig) config);
-            CmppSessionFactory<CmppSession> sessionFactory = new CmppSessionFactory<CmppSession>(
+            CmppClientSessionFactory<CmppSession> sessionFactory = new CmppClientSessionFactory<CmppSession>(
                     tcpClient, 
                     connectRequestMessageFacotry, 
                     config, 

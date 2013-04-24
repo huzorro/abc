@@ -65,19 +65,8 @@ public class CmppConnectResponseMessage<T extends ChannelBuffer> extends Default
     public String toString() {
         return String
                 .format("CmppConnectResponseMessage [status=%s, authenticatorISMG=%s, version=%s, toString()=%s]",
-                        status, Arrays.toString(authenticatorISMG), version,
+                        status, Hex.encodeHexString(authenticatorISMG), version,
                         super.toString());
     }
-
-    
-//    /* (non-Javadoc)
-//     * @see java.lang.Object#toString()
-//     */
-//    @Override
-//    public String toString() {
-//        return String
-//                .format("CmppConnectResponseMessage [status=%s, authenticatorISMG=%s, version=%s]",
-//                        status, Hex.encodeHexString(authenticatorISMG), version);
-//    }
-//    
+ 
 }
