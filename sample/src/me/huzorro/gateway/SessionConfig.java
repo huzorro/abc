@@ -13,9 +13,12 @@ public interface SessionConfig {
     public void setHost(String host);
     public void setPort(int port);
     public int getPort();
+    public void setUser(String user);
     public String getUser();
     public String getPasswd();
+    public void setPasswd(String passwd);
     public short getVersion();
+    public void setVersion(short version);
     public String getAttPreffix();
     public void setAttPreffix(String attPreffix);
     public XMLConfiguration getConfiguration();

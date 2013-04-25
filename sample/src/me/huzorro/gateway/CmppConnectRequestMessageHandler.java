@@ -14,14 +14,16 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 public class CmppConnectRequestMessageHandler extends
         SimpleChannelUpstreamHandler {
 	private PacketType packetType;
+	private CmppServerSessionFactory<Session> sessionFactory;
     /**
      * 
      */
-    public CmppConnectRequestMessageHandler() {
-    	this(PacketType.CMPPCONNECTREQUEST);
+    public CmppConnectRequestMessageHandler(CmppServerSessionFactory<Session> sessionFactory) {
+    	this(PacketType.CMPPCONNECTREQUEST, sessionFactory);
     }
-    public CmppConnectRequestMessageHandler(PacketType packetType) {
+    public CmppConnectRequestMessageHandler(PacketType packetType, CmppServerSessionFactory<Session> sessionFactory) {
     	this.packetType = packetType;
+    	this.sessionFactory = sessionFactory;
     }
 
     /* (non-Javadoc)
@@ -38,9 +40,19 @@ public class CmppConnectRequestMessageHandler extends
             return;
         }        
         CmppConnectRequestMessage<ChannelBuffer> connectRequestMessage = (CmppConnectRequestMessage<ChannelBuffer>) message;
-//        Session session = (Session) ctx.getChannel().getAttachment();
         
-        connectRequestMessage.setChannelIds(session.getConfig().getChannelIds());
+        SessionConfig config = new CmppUpstreamServerSessionConfig();  
+        
+        //TODO 从sqllite获取该client端的配置信息
+        
+        connectRequestMessage.setChannelIds(config.getChannelIds());
+
+        sessionFactory.setChannel(ctx.getChannel());
+        sessionFactory.setConfig(config);
+        
+        Session session = sessionFactory.create();
+        ctx.getChannel().setAttachment(session);
+        
         
         
         if(connectRequestMessage.getStatus() == 0L) {

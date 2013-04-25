@@ -11,7 +11,7 @@ public class DefaultSessionConfig implements SessionConfig {
     private String channelIds;
     private String attPreffix;
     private XMLConfiguration configuration;
-    private Object attachment;
+    private Object attachment; 
     /* (non-Javadoc)
      * @see me.huzorro.gateway.SessionConfig#getId()
      */
@@ -26,6 +26,21 @@ public class DefaultSessionConfig implements SessionConfig {
     public void setChannelIds(String ids) {
         this.channelIds = ids;
     }
+	@Override
+	public void setUser(String user) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setPasswd(String passwd) {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public void setVersion(short version) {
+		// TODO Auto-generated method stub
+		
+	}    
     /* (non-Javadoc)
      * @see me.huzorro.gateway.SessionConfig#getHost()
      */
@@ -51,7 +66,8 @@ public class DefaultSessionConfig implements SessionConfig {
     @Override
     public int getPort() {
         return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "port"));
-    }
+    } 
+    
     /* (non-Javadoc)
      * @see me.huzorro.gateway.SessionConfig#getUser()
      */
@@ -287,6 +303,5 @@ public class DefaultSessionConfig implements SessionConfig {
                         getDeliverQueueSize(), getRequestQueueSequence(),
                         getResponseQueueSequence(), getDeliverQueueSequence());
     }
-
     
 }

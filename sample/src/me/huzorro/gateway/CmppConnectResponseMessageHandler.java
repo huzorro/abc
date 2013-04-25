@@ -43,13 +43,15 @@ public class CmppConnectResponseMessageHandler extends
         Session session = (Session) ctx.getChannel().getAttachment();
         connectResponseMessage.setChannelIds(session.getConfig().getChannelIds());
         
+        logger.info(message.toString());
+        
         if(connectResponseMessage.getStatus() == 0L) {
             session.getLoginFuture().setLogged();
+            super.messageReceived(ctx, e);
         } else {
             session.close();
+            return;
         }
-        logger.info(message.toString());
-        super.messageReceived(ctx, e);
     }
     
 }
