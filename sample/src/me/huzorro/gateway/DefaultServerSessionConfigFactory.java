@@ -1,0 +1,84 @@
+/**
+ * 
+ */
+package me.huzorro.gateway;
+
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * @author huzorro
+ * @param <T>
+ *
+ */
+public class DefaultServerSessionConfigFactory<T> implements Factory<T> {
+	private static final Logger logger = LoggerFactory.getLogger(DefaultServerSessionConfigFactory.class);
+	private String user;
+	private short version;
+	private String host;
+
+	/**
+	 * 
+	 */
+	public DefaultServerSessionConfigFactory() {
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			logger.error("sqlite jdbc load failed {}", e);
+			Runtime.getRuntime().exit(-1);
+		}
+	}
+	public  DefaultServerSessionConfigFactory<T> setUser(String user) {
+		this.user = user;
+		return this;
+	}
+
+	public DefaultServerSessionConfigFactory<T> setVersion(short version) {
+		this.version = version;
+		return this;
+	}
+	public DefaultServerSessionConfigFactory<T> setHost(String host) {
+		this.host = host;
+		return this;
+	}
+	@Override
+	@SuppressWarnings("unchecked")
+	public T create() throws SQLException {
+		URL url = ClassLoader.getSystemResource("session.config");
+		Connection connection = DriverManager.getConnection("jdbc:sqlite:" + url.getFile());
+    	try {
+			PreparedStatement pstmt = connection.prepareStatement(
+					"SELECT channelids, user, passwd, maxretry, retrytime, maxsessions, " +
+					"windows FROM session_config_tbl WHERE user = ? AND clienthost = ? AND version = ? AND status = ?");
+			pstmt.setString(1, user);
+			pstmt.setString(2, host);
+			pstmt.setInt(3, version);
+			pstmt.setInt(4, 1);
+			ResultSet rs = pstmt.executeQuery();
+			if(!rs.next()) return null;
+			SessionConfig config = new DefaultServerSessionConfig();
+			config.setChannelIds(rs.getString("channelids"));
+			config.setUser(rs.getString("user"));
+			config.setPasswd(rs.getString("passwd"));
+			config.setMaxRetry(rs.getInt("maxretry"));
+			config.setRetryWaitTime(rs.getInt("retrytime"));
+			config.setMaxSessions(rs.getInt("maxsessions"));
+			config.setWindows(rs.getInt("windows"));
+			logger.info(config.toString());
+			return (T) config;
+		} catch(SQLException e){
+			logger.error("{}", e);
+			throw e;
+		}finally {
+			connection.close();
+		}
+	}
+
+}
