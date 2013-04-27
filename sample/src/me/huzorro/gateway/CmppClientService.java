@@ -1,4 +1,4 @@
-package me.huzorro.gateway;
+﻿package me.huzorro.gateway;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,16 +45,28 @@ public class CmppClientService implements Service {
         return this;
     }
     protected CmppClientService clientServiceInit() {
-        Service upstream = new CmppUpstreamClientService(
+
+        Service upstreams = new CmppUpstreamServerService(
                 CmppGlobalVars.upstreamSessionConfigMap, 
-                CmppGlobalVars.clientBootstrapMap, 
+                CmppGlobalVars.serverBootstrapMap, 
                 CmppGlobalVars.requestMsgQueueMap, 
                 CmppGlobalVars.responseMsgQueueMap, 
                 CmppGlobalVars.deliverMsgQueueMap, 
                 CmppGlobalVars.messageQueueMap, 
                 CmppGlobalVars.scheduleExecutorMap, 
                 CmppGlobalVars.sessionPoolMap);
-        services.add(upstream);
+        
+		Service upstreamc = new CmppUpstreamClientService(
+				CmppGlobalVars.upstreamSessionConfigMap,
+				CmppGlobalVars.clientBootstrapMap,
+				CmppGlobalVars.requestMsgQueueMap,
+				CmppGlobalVars.responseMsgQueueMap,
+				CmppGlobalVars.deliverMsgQueueMap,
+				CmppGlobalVars.messageQueueMap,
+				CmppGlobalVars.scheduleExecutorMap,
+				CmppGlobalVars.sessionPoolMap);      
+        services.add(upstreams);
+        services.add(upstreamc);
         return this;
     }
     protected CmppClientService messageServiceInit() {
@@ -90,6 +102,7 @@ public class CmppClientService implements Service {
      * @param args
      */
     public static void main(String[] args) {
+
             new Thread(new CmppClientService()).start();
             try {
                 Thread.sleep(5000L);

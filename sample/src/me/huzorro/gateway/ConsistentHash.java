@@ -47,7 +47,7 @@ public class ConsistentHash<T> {
         }
     }
 
-    public void remove(T node) {
+    public void delete(T node) {
         for (int i = 0; i < numberOfReplicas; i++) {
             circle.remove(hashFunction.hashString(node.toString() + i).asLong());
         }

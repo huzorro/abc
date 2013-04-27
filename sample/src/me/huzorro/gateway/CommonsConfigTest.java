@@ -262,6 +262,10 @@ public class CommonsConfigTest {
         System.out.println(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss"));
 
         System.out.println(Long.parseLong(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss")));
+        
+        long t = Long.parseLong(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss"));
+        
+        System.out.println(Long.toString(t).length());
 //        Message<ChannelBuffer> m = new DefaultMessage<ChannelBuffer>();
 //        DefaultHead<ChannelBuffer> h = new DefaultHead<ChannelBuffer>();
 //        m.setHeader(h);

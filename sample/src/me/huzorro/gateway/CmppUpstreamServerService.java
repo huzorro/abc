@@ -78,8 +78,8 @@ public class CmppUpstreamServerService implements Service {
                     messageQueueMap.get(config),
                     scheduleExecutorMap.get(config),
                     sessionPoolMap.get(configMap));
-        	
-            ChannelPipelineFactory pipelineFactory = new CmppUpstreamServerChannelPipelineFactory(sessionFactory);
+        	DefaultServerSessionConfigFactory<SessionConfig> configFactory = new CmppUpstreamServerSessionConfigFactory<SessionConfig>();
+            ChannelPipelineFactory pipelineFactory = new CmppUpstreamServerChannelPipelineFactory(sessionFactory, configFactory);
             NettyTcpServerFactory<NettyTcpServer<Channel>> tcpServerFactory = 
             		 new NettyTcpServerFactory<NettyTcpServer<Channel>>(
                             config.getHost(), config.getPort(), pipelineFactory, serverBootstrapMap.get(config));

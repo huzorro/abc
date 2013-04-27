@@ -14,11 +14,15 @@ import org.jboss.netty.channel.Channels;
 public class CmppUpstreamServerChannelPipelineFactory implements
 		ChannelPipelineFactory {
 	private CmppServerSessionFactory<Session> sessionFactory;
+	private DefaultServerSessionConfigFactory<SessionConfig> configFactory;
 	/**
 	 * 
 	 */
-	public CmppUpstreamServerChannelPipelineFactory(CmppServerSessionFactory<Session> sessionFactory) {
+	public CmppUpstreamServerChannelPipelineFactory(
+			CmppServerSessionFactory<Session> sessionFactory,
+			DefaultServerSessionConfigFactory<SessionConfig> configFactory) {
 		this.sessionFactory = sessionFactory;
+		this.configFactory = configFactory;
 	}
 
 	/* (non-Javadoc)
@@ -36,7 +40,7 @@ public class CmppUpstreamServerChannelPipelineFactory implements
         
         pipeline.addLast("CmppHeaderEncoder", new CmppHeaderEncoder());
         
-        pipeline.addLast("CmppConnectRequestMessageHandler", new CmppConnectRequestMessageHandler(sessionFactory));
+        pipeline.addLast("CmppConnectRequestMessageHandler", new CmppConnectRequestMessageHandler(sessionFactory, configFactory));
         return pipeline;
 	}
 
