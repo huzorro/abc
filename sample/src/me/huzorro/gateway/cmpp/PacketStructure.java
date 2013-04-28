@@ -6,6 +6,10 @@ package me.huzorro.gateway.cmpp;
  * @author huzorro(huzorro@gmail.com)
  */
 public interface PacketStructure {
+    public DataType getDataType();
+    public boolean getFix();
+    public int getLength();
+    public int getBodyLength();
     enum ConnectRequest implements PacketStructure {
         SOURCEADDR(DataType.OCTERSTRING, true, 6),
         AUTHENTICATORSOURCE(DataType.OCTERSTRING, true, 16),
