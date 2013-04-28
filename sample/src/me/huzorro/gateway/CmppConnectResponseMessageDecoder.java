@@ -8,9 +8,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister.Pack;
-import com.sun.xml.internal.ws.api.message.Packet;
-
 /**
  *
  * @author huzorro(huzorro@gmail.com)

@@ -1,7 +1,5 @@
 package me.huzorro.gateway;
 
-import java.nio.charset.Charset;
-
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.apache.commons.lang.ArrayUtils;

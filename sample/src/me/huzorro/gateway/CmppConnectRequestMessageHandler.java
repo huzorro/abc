@@ -1,7 +1,6 @@
 package me.huzorro.gateway;
 
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import me.huzorro.gateway.cmpp.Head;

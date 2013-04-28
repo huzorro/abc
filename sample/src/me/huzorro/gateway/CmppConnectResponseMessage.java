@@ -1,7 +1,5 @@
 package me.huzorro.gateway;
 
-import java.util.Arrays;
-
 import org.apache.commons.codec.binary.Hex;
 import org.jboss.netty.buffer.ChannelBuffer;
 

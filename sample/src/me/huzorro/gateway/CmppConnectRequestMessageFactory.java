@@ -1,19 +1,16 @@
 package me.huzorro.gateway;
 
-import java.nio.charset.Charset;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
-import org.jboss.netty.buffer.ChannelBuffer;
-
-import com.google.common.primitives.Bytes;
-import com.google.common.primitives.Longs;
 
 import me.huzorro.gateway.cmpp.Head;
 import me.huzorro.gateway.cmpp.PacketStructure;
 import me.huzorro.gateway.cmpp.PacketType;
+
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.jboss.netty.buffer.ChannelBuffer;
+
+import com.google.common.primitives.Bytes;
 
 /**
  *
