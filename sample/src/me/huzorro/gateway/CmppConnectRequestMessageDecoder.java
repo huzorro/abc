@@ -45,7 +45,7 @@ public class CmppConnectRequestMessageDecoder extends OneToOneDecoder {
         
         ChannelBuffer sourceAddrBuffer = 
                 bodyBuffer.readBytes(PacketStructure.ConnectRequest.SOURCEADDR.getLength());
-        requestMessage.setSourceAddr(sourceAddrBuffer.toString(Charset.forName("GBK")));
+        requestMessage.setSourceAddr(sourceAddrBuffer.toString(GlobalVars.defaultTransportCharset));
         
         byte[] authenticatorSourceBytes = 
                 new byte[PacketStructure.ConnectRequest.AUTHENTICATORSOURCE.getLength()];

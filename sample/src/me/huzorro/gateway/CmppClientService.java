@@ -45,18 +45,7 @@ public class CmppClientService implements Service {
         return this;
     }
     protected CmppClientService clientServiceInit() {
-
-        Service upstreams = new CmppUpstreamServerService(
-                CmppGlobalVars.upstreamSessionConfigMap, 
-                CmppGlobalVars.serverBootstrapMap, 
-                CmppGlobalVars.requestMsgQueueMap, 
-                CmppGlobalVars.responseMsgQueueMap, 
-                CmppGlobalVars.deliverMsgQueueMap, 
-                CmppGlobalVars.messageQueueMap, 
-                CmppGlobalVars.scheduleExecutorMap, 
-                CmppGlobalVars.sessionPoolMap);
-        
-		Service upstreamc = new CmppUpstreamClientService(
+		Service upstream = new CmppUpstreamClientService(
 				CmppGlobalVars.upstreamSessionConfigMap,
 				CmppGlobalVars.clientBootstrapMap,
 				CmppGlobalVars.requestMsgQueueMap,
@@ -65,8 +54,7 @@ public class CmppClientService implements Service {
 				CmppGlobalVars.messageQueueMap,
 				CmppGlobalVars.scheduleExecutorMap,
 				CmppGlobalVars.sessionPoolMap);      
-        services.add(upstreams);
-        services.add(upstreamc);
+        services.add(upstream);
         return this;
     }
     protected CmppClientService messageServiceInit() {

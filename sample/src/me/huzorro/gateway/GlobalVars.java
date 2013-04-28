@@ -1,5 +1,6 @@
 package me.huzorro.gateway;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -22,16 +23,12 @@ public class GlobalVars {
     private final static Logger logger = LoggerFactory.getLogger(GlobalVars.class);
     public static DefaultConfigurationBuilder configBuilder;
     public static CombinedConfiguration config;
+    public static Charset defaultLocalCharset = Charset.forName("UTF-8");
+    public static Charset defaultTransportCharset = Charset.forName("GBK");    
     public static Map<String, SessionConfig> duplexSessionConfigMap = new HashMap<String, SessionConfig>();
     public static Map<String, SessionConfig> upstreamSessionConfigMap = new HashMap<String, SessionConfig>();
     public static Map<String, SessionConfig> downstreamSessionConfigMap = new HashMap<String, SessionConfig>();
     public static Map<Map<String, SessionConfig>, SessionPool> sessionPoolMap = new HashMap<Map<String, SessionConfig>, SessionPool>();
-    
-    
-//    public static Map<SessionConfig, BlockingQueue<MessageFuture>> requestMsgQueueMap = new HashMap<SessionConfig, BlockingQueue<MessageFuture>>();
-//    public static Map<SessionConfig, BlockingQueue<MessageFuture>> responseMsgQueueMap = new HashMap<SessionConfig, BlockingQueue<MessageFuture>>();
-//    public static Map<SessionConfig, BlockingQueue<MessageFuture>> deliverMsgQueueMap = new HashMap<SessionConfig, BlockingQueue<MessageFuture>>();
-//    public static Map<SessionConfig, BlockingQueue<MessageFuture>> messageQueueMap = new HashMap<SessionConfig, BlockingQueue<MessageFuture>>();
     
     public static Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> requestMsgQueueMap = 
             new HashMap<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>>();

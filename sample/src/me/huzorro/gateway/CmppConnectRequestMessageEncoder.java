@@ -40,7 +40,7 @@ public class CmppConnectRequestMessageEncoder extends OneToOneEncoder {
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()) return msg;
         ChannelBuffer bodyBuffer = ChannelBuffers.dynamicBuffer();
-        bodyBuffer.writeBytes(message.getSourceAddr().getBytes(Charset.forName("GBK")));
+        bodyBuffer.writeBytes(message.getSourceAddr().getBytes(GlobalVars.defaultTransportCharset));
         bodyBuffer.writeBytes(message.getAuthenticatorSource());
         
         byte[] versionBytes = Shorts.toByteArray(message.getVersion());

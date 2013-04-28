@@ -55,7 +55,7 @@ public class DefaultServerSessionConfigFactory<T> implements Factory<T> {
 		Connection connection = DriverManager.getConnection("jdbc:sqlite:" + url.getFile());
     	try {
 			PreparedStatement pstmt = connection.prepareStatement(
-					"SELECT channelids, user, passwd, maxretry, retrytime, maxsessions, " +
+					"SELECT channelids, user, passwd, version, maxretry, retrytime, maxsessions, " +
 					"windows FROM session_config_tbl WHERE user = ? AND clienthost = ? AND version = ? AND status = ?");
 			pstmt.setString(1, user);
 			pstmt.setString(2, host);
@@ -67,6 +67,7 @@ public class DefaultServerSessionConfigFactory<T> implements Factory<T> {
 			config.setChannelIds(rs.getString("channelids"));
 			config.setUser(rs.getString("user"));
 			config.setPasswd(rs.getString("passwd"));
+			config.setVersion(rs.getShort("version"));
 			config.setMaxRetry(rs.getInt("maxretry"));
 			config.setRetryWaitTime(rs.getInt("retrytime"));
 			config.setMaxSessions(rs.getInt("maxsessions"));

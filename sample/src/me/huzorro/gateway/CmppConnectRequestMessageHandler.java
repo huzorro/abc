@@ -55,6 +55,7 @@ public class CmppConnectRequestMessageHandler extends
             throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) e.getMessage();
         long commandId = ((Integer) message.getHeader().getCommandId()).intValue();
+        System.out.println(message);
         if(commandId != packetType.getCommandId()){
             super.messageReceived(ctx, e);
             return;
@@ -89,15 +90,15 @@ public class CmppConnectRequestMessageHandler extends
 			return;
 		}
 		if(null != config) {
-	        byte[] userBytes = config.getUser().getBytes(Charset.forName("GBK"));
-	        byte[] passwdBytes = config.getPasswd().getBytes(Charset.forName("GBK"));
+	        byte[] userBytes = config.getUser().getBytes(GlobalVars.defaultTransportCharset);
+	        byte[] passwdBytes = config.getPasswd().getBytes(GlobalVars.defaultTransportCharset);
 	        String timestampStr = Long.toString(connectRequestMessage.getTimestamp());
 	        timestampStr = String.format("%1$s%2$s", Strings.repeat("0", 10 - timestampStr.length()), timestampStr);
 	        
-	        byte[] timestampBytes = timestampStr.getBytes(Charset.forName("GBK")); 	
-			byte[] authStr = DigestUtils.md5(Bytes.concat(userBytes, new byte[9], passwdBytes, timestampBytes));
+	        byte[] timestampBytes = timestampStr.getBytes(GlobalVars.defaultTransportCharset); 	
+			byte[] authBytes = DigestUtils.md5(Bytes.concat(userBytes, new byte[9], passwdBytes, timestampBytes));
 			
-			if(!Arrays.equals(authStr, connectRequestMessage.getAuthenticatorSource())) {
+			if(!Arrays.equals(authBytes, connectRequestMessage.getAuthenticatorSource())) {
 				ctx.getChannel().write(connectResponseMessage);
 				ctx.getChannel().close();
 				return;
@@ -114,7 +115,7 @@ public class CmppConnectRequestMessageHandler extends
 						Bytes.concat(
 								statusUnsignedIns, 
 								connectRequestMessage.getAuthenticatorSource(), 
-								config.getPasswd().getBytes(Charset.forName("GBK"))))				
+								config.getPasswd().getBytes(GlobalVars.defaultTransportCharset)))				
 				);
 		
 		ctx.getChannel().write(connectResponseMessage);

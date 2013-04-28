@@ -55,10 +55,10 @@ public class CmppConnectRequestMessageFactory<T> implements Factory<T> {
         String timestamp = DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss");
         message.setTimestamp(Long.parseLong(timestamp));
         
-        byte[] userBytes = config.getUser().getBytes(Charset.forName("GBK"));
-        byte[] passwdBytes = config.getPasswd().getBytes(Charset.forName("GBK"));
+        byte[] userBytes = config.getUser().getBytes(GlobalVars.defaultTransportCharset);
+        byte[] passwdBytes = config.getPasswd().getBytes(GlobalVars.defaultTransportCharset);
         
-        byte[] timestampBytes = timestamp.getBytes(Charset.forName("GBK"));
+        byte[] timestampBytes = timestamp.getBytes(GlobalVars.defaultTransportCharset);
         
         message.setAuthenticatorSource(DigestUtils.md5(Bytes.concat(userBytes, new byte[9], passwdBytes, timestampBytes)));
         message.setHeader(header);
