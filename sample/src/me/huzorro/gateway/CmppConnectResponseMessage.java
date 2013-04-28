@@ -1,5 +1,7 @@
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.PacketType;
+
 import org.apache.commons.codec.binary.Hex;
 import org.jboss.netty.buffer.ChannelBuffer;
 
@@ -14,7 +16,14 @@ public class CmppConnectResponseMessage<T extends ChannelBuffer> extends Default
     private byte[] authenticatorISMG;
     private short version;
     
-    /**
+    
+    public CmppConnectResponseMessage() {
+    	this(PacketType.CMPPCONNECTRESPONSE);
+	}
+    public CmppConnectResponseMessage(PacketType packetType) {
+    	setPacketType(packetType);
+	}
+	/**
      * @return the status
      */
     public long getStatus() {

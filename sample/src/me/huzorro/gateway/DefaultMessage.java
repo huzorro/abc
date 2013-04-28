@@ -2,6 +2,8 @@ package me.huzorro.gateway;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import me.huzorro.gateway.cmpp.PacketType;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
@@ -10,6 +12,7 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
     private static final long serialVersionUID = -4245789758843785127L;
+    private PacketType packetType;
     private Object channelIds;
     private AtomicInteger requests = new AtomicInteger();
     private Message<?> response;
@@ -22,6 +25,14 @@ public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
     public DefaultMessage() {
         // TODO Auto-generated constructor stub
     }
+	@Override
+	public void setPacketType(PacketType packetType) {
+		this.packetType = packetType;
+	}
+	@Override
+	public PacketType getPacketType() {
+		return packetType;
+	}    
     /* (non-Javadoc)
      * @see me.huzorro.gateway.Message#setChannelIds(java.lang.Object)
      */

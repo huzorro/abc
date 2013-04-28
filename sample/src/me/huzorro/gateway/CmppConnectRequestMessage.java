@@ -1,5 +1,7 @@
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.PacketType;
+
 import org.apache.commons.codec.binary.Hex;
 import org.jboss.netty.buffer.ChannelBuffer;
 
@@ -15,8 +17,12 @@ public class CmppConnectRequestMessage<T extends ChannelBuffer> extends DefaultM
     private byte[] authenticatorSource;
     private short version;
     private long timestamp;
-
+    
     public CmppConnectRequestMessage() {
+    	this(PacketType.CMPPCONNECTREQUEST);
+    }
+    public CmppConnectRequestMessage(PacketType packetType) {    	
+    	setPacketType(packetType);
     }
     /**
      * @return the sourceAddr

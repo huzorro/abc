@@ -2,11 +2,15 @@ package me.huzorro.gateway;
 
 import java.io.Serializable;
 
+import me.huzorro.gateway.cmpp.PacketType;
+
 /**
  *
  * @author huzorro(huzorro@gmail.com)
  */
 public interface Message<T> extends Serializable  {
+	public void setPacketType(PacketType packetType);
+	public PacketType getPacketType();
     public void setChannelIds(Object ids);
     public Object getChannelIds(); 
     public int incrementAndGetRequests();

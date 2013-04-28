@@ -54,7 +54,6 @@ public class CmppConnectRequestMessageHandler extends
             throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) e.getMessage();
         long commandId = ((Integer) message.getHeader().getCommandId()).intValue();
-        System.out.println(message);
         if(commandId != packetType.getCommandId()){
             super.messageReceived(ctx, e);
             return;
