@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -23,6 +24,7 @@ public class GlobalVars {
     private final static Logger logger = LoggerFactory.getLogger(GlobalVars.class);
     public static DefaultConfigurationBuilder configBuilder;
     public static CombinedConfiguration config;
+    public static AtomicLong sequenceId = new AtomicLong();
     public static Charset defaultLocalCharset = Charset.forName("UTF-8");
     public static Charset defaultTransportCharset = Charset.forName("GBK");    
     public static Map<String, SessionConfig> duplexSessionConfigMap = new HashMap<String, SessionConfig>();

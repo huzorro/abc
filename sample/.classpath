@@ -2,55 +2,60 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/guava-14.0-rc1.jar" sourcepath="F:/java依赖包/guava-14.0-sources.jar">
+	<classpathentry kind="lib" path="lib/guava-14.0-rc1.jar" sourcepath="F:/备份20130419/java依赖包/guava-14.0-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/guava-14.0-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/guava-14.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-configuration-1.9.jar" sourcepath="F:/java依赖包/commons-configuration-1.9/commons-configuration-1.9-sources.jar">
+	<classpathentry kind="lib" path="lib/commons-configuration-1.9.jar" sourcepath="F:/备份20130419/java依赖包/commons-configuration-1.9/commons-configuration-1.9-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/commons-configuration-1.9/commons-configuration-1.9-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/commons-configuration-1.9/commons-configuration-1.9-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/logback-classic-1.0.9.jar" sourcepath="F:/java依赖包/logback-1.0.9/logback-classic-1.0.9-sources.jar"/>
-	<classpathentry kind="lib" path="lib/logback-core-1.0.9.jar" sourcepath="F:/java依赖包/logback-1.0.9/logback-core-1.0.9-sources.jar"/>
+	<classpathentry kind="lib" path="lib/logback-core-1.0.9.jar" sourcepath="F:/备份20130419/java依赖包/logback-1.0.9/logback-core-1.0.9-sources.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar" sourcepath="F:/java依赖包/commons-lang-2.6/commons-lang-2.6-sources.jar">
+	<classpathentry kind="lib" path="lib/commons-lang-2.6.jar" sourcepath="F:/备份20130419/java依赖包/commons-lang-2.6/commons-lang-2.6-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/commons-lang-2.6/commons-lang-2.6-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/commons-lang-2.6/commons-lang-2.6-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar" sourcepath="F:/java依赖包/commons-logging-1.1.1/commons-logging-1.1.1-sources.jar">
+	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar" sourcepath="F:/备份20130419/java依赖包/commons-logging-1.1.1/commons-logging-1.1.1-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/commons-logging-1.1.1/commons-logging-1.1.1-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/commons-logging-1.1.1/commons-logging-1.1.1-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/commons-logging-adapters-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-api-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-beanutils-1.8.3.jar" sourcepath="F:/java依赖包/commons-beanutils-1.8.3/commons-beanutils-1.8.3-sources.jar">
+	<classpathentry kind="lib" path="lib/commons-beanutils-1.8.3.jar" sourcepath="F:/备份20130419/java依赖包/commons-beanutils-1.8.3/commons-beanutils-1.8.3-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/commons-beanutils-1.8.3/commons-beanutils-1.8.3-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/commons-beanutils-1.8.3/commons-beanutils-1.8.3-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/commons-beanutils-bean-collections-1.8.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-beanutils-core-1.8.3.jar"/>
-	<classpathentry kind="lib" path="lib/commons-jxpath-1.3.jar" sourcepath="F:/java依赖包/commons-jxpath-1.3/commons-jxpath-1.3-sources.jar">
+	<classpathentry kind="lib" path="lib/commons-jxpath-1.3.jar" sourcepath="F:/备份20130419/java依赖包/commons-jxpath-1.3/commons-jxpath-1.3-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/commons-jxpath-1.3/commons-jxpath-1.3-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/commons-jxpath-1.3/commons-jxpath-1.3-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/netty-3.6.3.Final.jar" sourcepath="F:/java依赖包/netty-3.6.3.Final/jar/netty-3.6.3.Final-sources.jar">
+	<classpathentry kind="lib" path="lib/netty-3.6.3.Final.jar" sourcepath="F:/备份20130419/java依赖包/netty-3.6.3.Final/jar/netty-3.6.3.Final-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="file:/F:/java依赖包/netty-3.6.3.Final/doc/api/"/>
+			<attribute name="javadoc_location" value="file:/F:/备份20130419/java依赖包/netty-3.6.3.Final/doc/api/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-codec-1.7.jar" sourcepath="F:/java依赖包/commons-codec-1.7/commons-codec-1.7-sources.jar">
+	<classpathentry kind="lib" path="lib/commons-codec-1.7.jar" sourcepath="F:/备份20130419/java依赖包/commons-codec-1.7/commons-codec-1.7-sources.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/F:/java依赖包/commons-codec-1.7/commons-codec-1.7-javadoc.jar!/"/>
+			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/commons-codec-1.7/commons-codec-1.7-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="config"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.15-SNAPSHOT-2.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/sqlite-jdbc-3.7.15-SNAPSHOT-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

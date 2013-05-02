@@ -7,7 +7,8 @@ package me.huzorro.gateway.cmpp;
  */
 public interface PacketStructure {
     public DataType getDataType();
-    public boolean getFix();
+    public boolean isFixFiled();
+    public boolean isFixPacket();
     public int getLength();
     public int getBodyLength();
     enum ConnectRequest implements PacketStructure {
@@ -16,18 +17,21 @@ public interface PacketStructure {
         VERSION(DataType.UNSIGNEDINT, true, 1),
         TIMESTAMP(DataType.UNSIGNEDINT, true, 4);
         private DataType dataType;
-        private boolean fix; 
+        private boolean isFixFiled;
         private int length;
-        private ConnectRequest(DataType dataType, boolean fix, int length) {
+        private ConnectRequest(DataType dataType, boolean isFixFiled, int length) {
             this.dataType = dataType;
-            this.fix = fix;
+            this.isFixFiled = isFixFiled;
             this.length = length;
         }
         public DataType getDataType() {
             return dataType;
         }
-        public boolean getFix() {
-            return fix;
+        public boolean isFixFiled() {
+            return isFixFiled;
+        }
+        public boolean isFixPacket() {
+        	return true;
         }
         public int getLength() {
             return length;
@@ -45,18 +49,21 @@ public interface PacketStructure {
         AUTHENTICATORISMG(DataType.OCTERSTRING, true, 16),
         VERSION(DataType.UNSIGNEDINT, true, 1);
         private DataType dataType;
-        private boolean fix; 
+        private boolean isFixFiled; 
         private int length;
-        private ConnectResponse(DataType dataType, boolean fix, int length) {
+        private ConnectResponse(DataType dataType, boolean isFixFiled, int length) {
             this.dataType = dataType;
-            this.fix = fix;
+            this.isFixFiled = isFixFiled;
             this.length = length;
         }
         public DataType getDataType() {
             return dataType;
         }
-        public boolean getFix() {
-            return fix;
+        public boolean isFixFiled() {
+            return isFixFiled;
+        }
+        public boolean isFixPacket() {
+        	return true;
         }
         public int getLength() {
             return length;
@@ -95,18 +102,21 @@ public interface PacketStructure {
         MSGCONTENT(DataType.OCTERSTRING, false, 0),
         LINKID(DataType.OCTERSTRING, true, 20);
         private DataType dataType;
-        private boolean fix; 
+        private boolean isFixFiled; 
         private int length;
-        private SubmitRequest(DataType dataType, boolean fix, int length) {
+        private SubmitRequest(DataType dataType, boolean isFixFiled, int length) {
             this.dataType = dataType;
-            this.fix = fix;
+            this.isFixFiled = isFixFiled;
             this.length = length;
         }
         public DataType getDataType() {
             return dataType;
         }
-        public boolean getFix() {
-            return fix;
+        public boolean isFixFiled() {
+            return isFixFiled;
+        }
+        public boolean isFixPacket() {
+        	return false;
         }
         public int getLength() {
             return length;
@@ -123,18 +133,21 @@ public interface PacketStructure {
         MSGID(DataType.UNSIGNEDINT, true, 8),
         RESULT(DataType.UNSIGNEDINT, true, 4);
         private DataType dataType;
-        private boolean fix; 
+        private boolean isFixFiled; 
         private int length;
-        private SubmitResponse(DataType dataType, boolean fix, int length) {
+        private SubmitResponse(DataType dataType, boolean isFixFiled, int length) {
             this.dataType = dataType;
-            this.fix = fix;
+            this.isFixFiled = isFixFiled;
             this.length = length;
         }
         public DataType getDataType() {
             return dataType;
         }
-        public boolean getFix() {
-            return fix;
+        public boolean isFixFiled() {
+            return isFixFiled;
+        }
+        public boolean isFixPacket() {
+        	return true;
         }
         public int getLength() {
             return length;

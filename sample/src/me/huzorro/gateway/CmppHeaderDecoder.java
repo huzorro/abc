@@ -5,6 +5,7 @@ import me.huzorro.gateway.cmpp.Head;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
 
 /**
@@ -60,6 +61,16 @@ public class CmppHeaderDecoder extends FrameDecoder {
         message.setHeader(header);
         return message;
     }
+
+	/* (non-Javadoc)
+	 * @see org.jboss.netty.handler.codec.frame.FrameDecoder#exceptionCaught(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.ExceptionEvent)
+	 */
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
+			throws Exception {
+		ctx.getChannel().close();
+		return;
+	}
    
 
 }

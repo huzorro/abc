@@ -92,22 +92,22 @@ public class CmppClientService implements Service {
     public static void main(String[] args) {
 
             new Thread(new CmppClientService()).start();
-            try {
-                Thread.sleep(5000L);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            new Thread(new Runnable() {
-                
-                @Override
-                public void run() {
-                    // TODO Auto-generated method stub
-                    while(true) {
-                        int s = GlobalVars.sessionPoolMap.get(GlobalVars.upstreamSessionConfigMap).size("901077");
-                        System.out.println(s);
-                    }
-                }
-            }).start();
+//            try {
+//                Thread.sleep(5000L);
+//            } catch (InterruptedException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//            }
+//            new Thread(new Runnable() {
+//                
+//                @Override
+//                public void run() {
+//                    // TODO Auto-generated method stub
+//                    while(true) {
+//                        int s = GlobalVars.sessionPoolMap.get(GlobalVars.upstreamSessionConfigMap).size("901077");
+//                        System.out.println(s);
+//                    }
+//                }
+//            }).start();
     }
 }

@@ -38,12 +38,12 @@ public class CmppConnectRequestMessageFactory<T> implements Factory<T> {
     @Override
     @SuppressWarnings("unchecked")
     public T create() throws Exception {
-        Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
-        header.setCommandId(packetType.getCommandId());
-        header.setHeadLength(Head.COMMANDID.getHeadLength());
-        header.setBodyLength(PacketStructure.ConnectRequest.SOURCEADDR.getBodyLength());
-        header.setPacketLength(header.getHeadLength() + header.getBodyLength());
-        header.setSequenceId(sequenceId.getAndIncrement());
+//        Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
+//        header.setCommandId(packetType.getCommandId());
+//        header.setHeadLength(Head.COMMANDID.getHeadLength());
+//        header.setBodyLength(PacketStructure.ConnectRequest.SOURCEADDR.getBodyLength());
+//        header.setPacketLength(header.getHeadLength() + header.getBodyLength());
+//        header.setSequenceId(sequenceId.getAndIncrement());
         
         CmppConnectRequestMessage<ChannelBuffer> message = new CmppConnectRequestMessage<ChannelBuffer>();
         message.setSourceAddr(config.getUser());
@@ -58,7 +58,7 @@ public class CmppConnectRequestMessageFactory<T> implements Factory<T> {
         byte[] timestampBytes = timestamp.getBytes(GlobalVars.defaultTransportCharset);
         
         message.setAuthenticatorSource(DigestUtils.md5(Bytes.concat(userBytes, new byte[9], passwdBytes, timestampBytes)));
-        message.setHeader(header);
+//        message.setHeader(header);
         return (T) message;
     }
 

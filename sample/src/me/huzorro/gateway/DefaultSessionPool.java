@@ -89,6 +89,7 @@ public class DefaultSessionPool implements SessionPool {
     @Override
     public void remove(Session session) {
         sessionGroup.get(session.getConfig().getChannelIds()).remove(session);
+        pool.get(session.getConfig().getChannelIds()).remove(session);
     }
 
     /* (non-Javadoc)

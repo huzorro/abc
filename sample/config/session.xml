@@ -5,10 +5,10 @@
             <channelIds>901077</channelIds>
             <upstream>
               <host>127.0.0.1</host>
-              <port>7890</port>
+              <port>7891</port>
               <user>901077</user>
               <passwd>ICP</passwd>
-              <version>30</version>
+              <version>1</version>
               <maxRetry>3</maxRetry>
               <retryWaitTime>60</retryWaitTime>
               <maxSessions>5</maxSessions>
@@ -25,10 +25,10 @@
             </upstream>
             <downstream>
               <host>127.0.0.1</host>
-              <port>7890</port>
+              <port>7891</port>
               <user>901077</user>
               <passwd>ICP</passwd>
-              <version>30</version>
+              <version>0</version>
               <maxRetry>3</maxRetry>
               <retryWaitTime>60</retryWaitTime>
               <maxSessions>5</maxSessions>
@@ -45,10 +45,10 @@
             
             <duplexstream>
               <host>127.0.0.1</host>
-              <port>7890</port>
+              <port>7891</port>
               <user>901077</user>
               <passwd>ICP</passwd>
-              <version>30</version>          
+              <version>48</version>          
               <maxRetry>3</maxRetry>
               <retryWaitTime>60</retryWaitTime>
               <maxSessions>1</maxSessions>

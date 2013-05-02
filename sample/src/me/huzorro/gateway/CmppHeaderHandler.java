@@ -3,6 +3,9 @@
  */
 package me.huzorro.gateway;
 
+import java.awt.TrayIcon.MessageType;
+import java.util.concurrent.atomic.AtomicLong;
+
 import me.huzorro.gateway.cmpp.Head;
 import me.huzorro.gateway.cmpp.PacketStructure;
 
@@ -32,28 +35,18 @@ public class CmppHeaderHandler extends OneToOneEncoder {
 	protected Object encode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
-        
-        long commandId = message.getPacketType().getCommandId();
+        if(!message.getPacketType().getPacketStructures()[0].isFixPacket()) {
+        	return msg;
+        }        
         
         Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
         header.setCommandId(message.getPacketType().getCommandId());
         header.setHeadLength(Head.COMMANDID.getHeadLength());
-        header.setBodyLength(message.getPacketType().getPacketStructure().getBodyLength());
+        header.setBodyLength(message.getPacketType().getPacketStructures()[0].getBodyLength());
         header.setPacketLength(header.getHeadLength() + header.getBodyLength());
-        header.setSequenceId(sequenceId.getAndIncrement());
-        
-        
-        if(commandId != packetType.getCommandId()){
-            super.messageReceived(ctx, e);
-            return;
-        } 		
-        Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
-        header.setCommandId(packetType.getCommandId());
-        header.setHeadLength(Head.COMMANDID.getHeadLength());
-        header.setBodyLength(PacketStructure.ConnectRequest.SOURCEADDR.getBodyLength());
-        header.setPacketLength(header.getHeadLength() + header.getBodyLength());
-        header.setSequenceId(sequenceId.getAndIncrement());
-        return null;
+        header.setSequenceId(GlobalVars.sequenceId.getAndIncrement());
+        message.setHeader(header);
+        return message;
 	}
 
 }
