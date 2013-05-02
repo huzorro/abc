@@ -3,11 +3,7 @@
  */
 package me.huzorro.gateway;
 
-import java.awt.TrayIcon.MessageType;
-import java.util.concurrent.atomic.AtomicLong;
-
 import me.huzorro.gateway.cmpp.Head;
-import me.huzorro.gateway.cmpp.PacketStructure;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
@@ -35,7 +31,7 @@ public class CmppHeaderHandler extends OneToOneEncoder {
 	protected Object encode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
-        if(!message.getPacketType().getPacketStructures()[0].isFixPacket()) {
+        if(!message.getPacketType().getPacketStructures()[0].isFixPacketLength()) {
         	return msg;
         }        
         

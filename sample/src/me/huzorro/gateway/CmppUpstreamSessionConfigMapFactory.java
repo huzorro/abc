@@ -3,7 +3,6 @@ package me.huzorro.gateway;
 import java.util.Map;
 
 import org.apache.commons.configuration.CombinedConfiguration;
-import org.apache.commons.configuration.DefaultConfigurationBuilder;
 
 /**
  *

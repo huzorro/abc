@@ -4,8 +4,6 @@
 package me.huzorro.gateway;
 
 import org.jboss.netty.channel.Channel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author huzorro
@@ -13,7 +11,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DefaultServerFactory<T> implements Factory<T> {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultServerFactory.class);
     private NettyTcpServer<Channel> nettyTcpServer;
 	/**
 	 * 
