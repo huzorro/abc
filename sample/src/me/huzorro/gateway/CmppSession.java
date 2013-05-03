@@ -1,6 +1,5 @@
 package me.huzorro.gateway;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.jboss.netty.channel.Channel;
@@ -22,12 +21,11 @@ public class CmppSession extends DefaultSession {
      */
     public CmppSession(
             Channel channel,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueue,
+            BdbQueueMap<Long, MessageFuture> requestQueue,
+            BdbQueueMap<Long, MessageFuture> responseQueue,
+            BdbQueueMap<Long, MessageFuture> deliverQueue,
             ScheduledExecutorService scheduleExecutor, SessionConfig config) {
-        super(channel, requestQueue, responseQueue, deliverQueue, messageQueue,
+        super(channel, requestQueue, responseQueue, deliverQueue,
                 scheduleExecutor, config);
     }
 

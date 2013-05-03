@@ -81,8 +81,22 @@ public class DefaultSessionConfig implements SessionConfig {
     @Override
     public String getPasswd() {
         return configuration.getString(String.format("%1$s.%2$s", attPreffix, "passwd"));
-    }    
+    }   
+    
     /* (non-Javadoc)
+	 * @see me.huzorro.gateway.SessionConfig#setGateId(int)
+	 */
+	@Override
+	public void setGateId(int gateId) {
+	}
+	/* (non-Javadoc)
+	 * @see me.huzorro.gateway.SessionConfig#getGateId()
+	 */
+	@Override
+	public int getGateId() {
+        return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "gateId"));
+	}
+	/* (non-Javadoc)
      * @see me.huzorro.gateway.SessionConfig#getVersion()
      */
     @Override
@@ -131,6 +145,21 @@ public class DefaultSessionConfig implements SessionConfig {
     public void setAttachment(Object attachment) {
         this.attachment = attachment;
     }
+    
+	@Override
+	public void setIdleTime(long seconds) {
+	}
+	
+	@Override
+	public long getIdleTime() {
+		return configuration.getLong(String.format("%1$s.%2$s", attPreffix, "idleTime"));
+	}    
+	
+	public void setLifeTime(long seconds) {
+	}
+	public long getLifeTime() {
+		return configuration.getLong(String.format("%1$s.%2$s", attPreffix, "lifeTime"));
+	}
     /* (non-Javadoc)
      * @see me.huzorro.gateway.SessionConfig#setMaxRetry(int)
      */
@@ -148,7 +177,7 @@ public class DefaultSessionConfig implements SessionConfig {
      * @see me.huzorro.gateway.SessionConfig#setRetryWaitTime(long)
      */
     @Override
-    public void setRetryWaitTime(long retryWaitTime) {
+    public void setRetryWaitTime(long seconds) {
     }
     /* (non-Javadoc)
      * @see me.huzorro.gateway.SessionConfig#getRetryWaitTime()
@@ -209,99 +238,65 @@ public class DefaultSessionConfig implements SessionConfig {
     public int getScheduleThreadNum() {
         return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "scheduleThreadNum"));
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#getRequestQueueSize()
-     */
     @Override
-    public int getRequestQueueSize() {
-        return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "requestQueueSize"));
+    public String  getRequestQueueName() {
+        return configuration.getString(String.format("%1$s.%2$s", attPreffix, "requestQueueName"));
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#setRequestQueueSize(int)
-     */
     @Override
-    public void setRequestQueueSize(int requestQueueSize) {
+    public void setRequestQueueName(String queueName) {
+    	
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#getResponseQueueSize()
-     */
     @Override
-    public int getResponseQueueSize() {
-        return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "responseQueueSize"));
+    public String getResponseQueueName() {
+        return configuration.getString(String.format("%1$s.%2$s", attPreffix, "responseQueueName"));
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#setResponseQueueSize(int)
-     */
     @Override
-    public void setResponseQueueSize(int responseQueueSize) {
+    public void setResponseQueueName(String queueName) {
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#getDeliverQueueSize()
-     */
     @Override
-    public int getDeliverQueueSize() {
-        return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "deliverQueueSize"));
+    public String getDeliverQueueName() {
+        return configuration.getString(String.format("%1$s.%2$s", attPreffix, "deliverQueueName"));
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#setDeliverQueueSize(int)
-     */
     @Override
-    public void setDeliverQueueSize(int deliverQueueSize) {
+    public void setDeliverQueueName(String queueName) {
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#setRequestQueueSequence(int)
-     */
     @Override
-    public void setRequestQueueSequence(int sequence) {
+    public void setRequestQueuePathHome(String pathHome) {
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#getRequestQueueSequence()
-     */
     @Override
-    public int getRequestQueueSequence() {
-        return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "requestQueueSequence"));
+    public String getRequestQueuePathHome() {
+        return configuration.getString(String.format("%1$s.%2$s", attPreffix, "requestQueuePathHome"));
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#setResponseQueueSequence(int)
-     */
     @Override
-    public void setResponseQueueSequence(int sequence) {        
+    public void setResponseQueuePathHome(String pathHome) {        
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#getResponseQueueSequence()
-     */
     @Override
-    public int getResponseQueueSequence() {
-        return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "responseQueueSequence"));
+    public String getResponseQueuePathHome() {
+        return configuration.getString(String.format("%1$s.%2$s", attPreffix, "responseQueuePathHome"));
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#setDeliverQueueSequence(int)
-     */
     @Override
-    public void setDeliverQueueSequence(int sequence) {        
+    public void setDeliverQueuePathHome(String pathHome) {        
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionConfig#getDeliverQueueSequence()
-     */
     @Override
-    public int getDeliverQueueSequence() {
-        return configuration.getInt(String.format("%1$s.%2$s", attPreffix, "deliverQueueSequence"));
+    public String getDeliverQueuePathHome() {
+        return configuration.getString(String.format("%1$s.%2$s", attPreffix, "deliverQueuePathHome"));
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return String
-                .format("DefaultSessionConfig [channelIds=%s, attPreffix=%s, configuration=%s, attachment=%s, getChannelIds()=%s, getHost()=%s, getPort()=%s, getAttPreffix()=%s, getConfiguration()=%s, getAttachment()=%s, getMaxRetry()=%s, getRetryWaitTime()=%s, getMaxSessions()=%s, getWindows()=%s, getGeneralThreadNum()=%s, getScheduleThreadNum()=%s, getRequestQueueSize()=%s, getResponseQueueSize()=%s, getDeliverQueueSize()=%s, getRequestQueueSequence()=%s, getResponseQueueSequence()=%s, getDeliverQueueSequence()=%s]",
-                        channelIds, attPreffix, configuration, attachment,
-                        getChannelIds(), getHost(), getPort(), getAttPreffix(),
-                        getConfiguration(), getAttachment(), getMaxRetry(),
-                        getRetryWaitTime(), getMaxSessions(), getWindows(),
-                        getGeneralThreadNum(), getScheduleThreadNum(),
-                        getRequestQueueSize(), getResponseQueueSize(),
-                        getDeliverQueueSize(), getRequestQueueSequence(),
-                        getResponseQueueSequence(), getDeliverQueueSequence());
-    }
-    
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String
+				.format("DefaultSessionConfig [getChannelIds()=%s, getHost()=%s, getPort()=%s, getUser()=%s, getPasswd()=%s, getVersion()=%s, getAttPreffix()=%s, getConfiguration()=%s, getAttachment()=%s, getIdleTime()=%s, getMaxRetry()=%s, getRetryWaitTime()=%s, getMaxSessions()=%s, getWindows()=%s, getGeneralThreadNum()=%s, getScheduleThreadNum()=%s, getRequestQueueName()=%s, getResponseQueueName()=%s, getDeliverQueueName()=%s, getRequestQueuePathHome()=%s, getResponseQueuePathHome()=%s, getDeliverQueuePathHome()=%s]",
+						getChannelIds(), getHost(), getPort(), getUser(),
+						getPasswd(), getVersion(), getAttPreffix(),
+						getConfiguration(), getAttachment(), getIdleTime(),
+						getMaxRetry(), getRetryWaitTime(), getMaxSessions(),
+						getWindows(), getGeneralThreadNum(),
+						getScheduleThreadNum(), getRequestQueueName(),
+						getResponseQueueName(), getDeliverQueueName(),
+						getRequestQueuePathHome(), getResponseQueuePathHome(),
+						getDeliverQueuePathHome());
+	}
+ 
 }

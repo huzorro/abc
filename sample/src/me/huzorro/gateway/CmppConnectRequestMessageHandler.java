@@ -3,8 +3,6 @@ package me.huzorro.gateway;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 
-import me.huzorro.gateway.cmpp.Head;
-import me.huzorro.gateway.cmpp.PacketStructure;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -14,8 +12,8 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
-import com.google.common.base.Strings;
 import com.google.common.primitives.Bytes;
+import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 
 /**
@@ -53,7 +51,7 @@ public class CmppConnectRequestMessageHandler extends
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
             throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) e.getMessage();
-        long commandId = ((Integer) message.getHeader().getCommandId()).intValue();
+        long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()){
             super.messageReceived(ctx, e);
             return;
@@ -61,18 +59,7 @@ public class CmppConnectRequestMessageHandler extends
         CmppConnectRequestMessage<ChannelBuffer> connectRequestMessage = (CmppConnectRequestMessage<ChannelBuffer>) message;
 		CmppConnectResponseMessage<ChannelBuffer> connectResponseMessage = new CmppConnectResponseMessage<ChannelBuffer>();
 		
-        Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
-        header.setCommandId(PacketType.CMPPCONNECTRESPONSE.getCommandId());
-        header.setHeadLength(Head.COMMANDID.getHeadLength());
-        header.setBodyLength(PacketStructure.ConnectResponse.STATUS.getBodyLength());
-        header.setPacketLength(header.getHeadLength() + header.getBodyLength());
-        header.setSequenceId(connectRequestMessage.getHeader().getSequenceId());
-        
-        connectResponseMessage.setHeader(header);
-		connectResponseMessage.setAuthenticatorISMG(new byte[16]);
-		connectResponseMessage.setStatus(3);
-		connectResponseMessage.setVersion(connectRequestMessage.getVersion());
-		
+        connectResponseMessage.setRequest(connectRequestMessage);
 		
 		SessionConfig config = sessionConfigFactory
 				.setHost(
@@ -81,7 +68,6 @@ public class CmppConnectRequestMessageHandler extends
 								.getHostAddress())
 				.setUser(connectRequestMessage.getSourceAddr())
 				.setVersion(connectRequestMessage.getVersion()).create();
-		
 		if(null == config) {
 			ctx.getChannel().write(connectResponseMessage);
 			ctx.getChannel().close();
@@ -91,8 +77,8 @@ public class CmppConnectRequestMessageHandler extends
 	        byte[] userBytes = config.getUser().getBytes(GlobalVars.defaultTransportCharset);
 	        byte[] passwdBytes = config.getPasswd().getBytes(GlobalVars.defaultTransportCharset);
 	        String timestampStr = Long.toString(connectRequestMessage.getTimestamp());
-	        timestampStr = String.format("%1$s%2$s", Strings.repeat("0", 10 - timestampStr.length()), timestampStr);
-	        
+	        timestampStr = String.format("%010d", timestampStr);
+
 	        byte[] timestampBytes = timestampStr.getBytes(GlobalVars.defaultTransportCharset); 	
 			byte[] authBytes = DigestUtils.md5(Bytes.concat(userBytes, new byte[9], passwdBytes, timestampBytes));
 			
@@ -102,24 +88,18 @@ public class CmppConnectRequestMessageHandler extends
 				return;
 			}
 		}
-		
 		connectResponseMessage.setStatus(0L);
 
-        byte[] statusBytes = Longs.toByteArray(connectResponseMessage.getStatus());
-        byte[] statusUnsignedIns = ArrayUtils.subarray(statusBytes, 4, 8);
-		
 		connectResponseMessage.setAuthenticatorISMG(
 				DigestUtils.md5(
 						Bytes.concat(
-								statusUnsignedIns, 
+								Ints.toByteArray((int) connectResponseMessage.getStatus()), 
 								connectRequestMessage.getAuthenticatorSource(), 
 								config.getPasswd().getBytes(GlobalVars.defaultTransportCharset)))				
 				);
 		
 		ctx.getChannel().write(connectResponseMessage);
 		
-        connectRequestMessage.setChannelIds(config.getChannelIds());
-
         sessionFactory.setChannel(ctx.getChannel());
         sessionFactory.setConfig(config);
         

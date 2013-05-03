@@ -6,7 +6,7 @@ import org.apache.commons.configuration.XMLConfiguration;
  *
  * @author huzorro(huzorro@gmail.com)
  */
-public interface SessionConfig {
+public interface SessionConfig  {
     public String getChannelIds();
     public void setChannelIds(String ids);
     public String getHost();
@@ -17,6 +17,8 @@ public interface SessionConfig {
     public String getUser();
     public String getPasswd();
     public void setPasswd(String passwd);
+    public void setGateId(int gateId);
+    public int getGateId();
     public short getVersion();
     public void setVersion(short version);
     public String getAttPreffix();
@@ -25,9 +27,13 @@ public interface SessionConfig {
     public void setConfiguration(XMLConfiguration configuration);
     public Object getAttachment();
     public void setAttachment(Object attachment);
+    public void setIdleTime(long seconds);
+    public long getIdleTime();
+    public void setLifeTime(long seconds);
+    public long getLifeTime();
     public void setMaxRetry(int maxRetry);
     public int getMaxRetry();
-    public void setRetryWaitTime(long retryWaitTime);
+    public void setRetryWaitTime(long seconds);
     public long getRetryWaitTime();
     public void setMaxSessions(int maxSessions);
     public int getMaxSessions();
@@ -37,17 +43,21 @@ public interface SessionConfig {
     public int getGeneralThreadNum();
     public void setScheduleThreadNum(int scheduleThreadNum);
     public int getScheduleThreadNum();
-    public int getRequestQueueSize();
-    public void setRequestQueueSize(int requestQueueSize);
-    public int getResponseQueueSize();
-    public void setResponseQueueSize(int responseQueueSize);
-    public int getDeliverQueueSize();
-    public void setDeliverQueueSize(int deliverQueueSize);
-    public void setRequestQueueSequence(int sequence);
-    public int getRequestQueueSequence();
-    public void setResponseQueueSequence(int sequence);
-    public int getResponseQueueSequence();
-    public void setDeliverQueueSequence(int sequence);
-    public int getDeliverQueueSequence();
+    
+    
+    public String getRequestQueueName();
+    public void setRequestQueueName(String queueName);
+    public String getResponseQueueName();
+    public void setResponseQueueName(String queueName);
+    public String getDeliverQueueName();
+    public void setDeliverQueueName(String queueName);  
+    
+    
+    public void setRequestQueuePathHome(String pathHome);
+    public String getRequestQueuePathHome();
+    public void setResponseQueuePathHome(String pathHome);
+    public String getResponseQueuePathHome();
+    public void setDeliverQueuePathHome(String pathHome);
+    public String getDeliverQueuePathHome();
     
 }

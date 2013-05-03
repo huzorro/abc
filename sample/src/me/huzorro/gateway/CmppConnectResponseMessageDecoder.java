@@ -32,7 +32,7 @@ public class CmppConnectResponseMessageDecoder extends OneToOneDecoder {
     protected Object decode(ChannelHandlerContext ctx, Channel channel,
             Object msg) throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
-        long commandId = ((Integer) message.getHeader().getCommandId()).intValue();
+        long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()) return msg;
         CmppConnectResponseMessage<ChannelBuffer> responseMessage = new CmppConnectResponseMessage<ChannelBuffer>();
         
@@ -42,9 +42,9 @@ public class CmppConnectResponseMessageDecoder extends OneToOneDecoder {
         ChannelBuffer bodyBuffer = message.getBodyBuffer().copy();
         
         responseMessage.setStatus(bodyBuffer.readUnsignedInt());
-        byte[] authenticatorISMGBytes = new byte[PacketStructure.ConnectResponse.AUTHENTICATORISMG.getLength()];
-        bodyBuffer.readBytes(authenticatorISMGBytes);
-        responseMessage.setAuthenticatorISMG(authenticatorISMGBytes);
+ 		responseMessage.setAuthenticatorISMG(bodyBuffer.readBytes(
+				PacketStructure.ConnectResponse.AUTHENTICATORISMG.getLength())
+				.array());
         responseMessage.setVersion(bodyBuffer.readUnsignedByte());
         return responseMessage;
     }

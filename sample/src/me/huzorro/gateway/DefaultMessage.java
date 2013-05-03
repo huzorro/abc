@@ -13,9 +13,11 @@ import org.jboss.netty.buffer.ChannelBuffer;
 public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
     private static final long serialVersionUID = -4245789758843785127L;
     private PacketType packetType;
-    private Object channelIds;
+    private long timestamp = System.currentTimeMillis();
+    private SessionConfig config;
     private AtomicInteger requests = new AtomicInteger();
     private Message<?> response;
+    private Message<?> request;
     private Header<T> header;
     private T buffer;
     private Object attachment;
@@ -33,22 +35,37 @@ public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
 	public PacketType getPacketType() {
 		return packetType;
 	}    
+	public void setTimestamp(long milliseconds) {
+		this.timestamp = milliseconds;
+	}
+	public long getTimestamp() {
+		return timestamp;
+	}
+	
+	
     /* (non-Javadoc)
-     * @see me.huzorro.gateway.Message#setChannelIds(java.lang.Object)
-     */
-    @Override
-    public void setChannelIds(Object ids) {
-        this.channelIds = ids;
-    }
-
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Message#getChannelIds()
-     */
-    @Override
-    public Object getChannelIds() {
-        return channelIds;
-    }    
-    /* (non-Javadoc)
+	 * @see me.huzorro.gateway.Message#isTerminationLife()
+	 */
+	@Override
+	public boolean isTerminationLife() {
+		return (System.currentTimeMillis() - timestamp) > (config == null ? 72 * 3600 * 1000
+				: config.getLifeTime() * 1000);
+	}
+	/* (non-Javadoc)
+	 * @see me.huzorro.gateway.Message#setConfig(me.huzorro.gateway.SessionConfig)
+	 */
+	@Override
+	public void setConfig(SessionConfig config) {
+		this.config = config;
+	}
+	/* (non-Javadoc)
+	 * @see me.huzorro.gateway.Message#getConfig()
+	 */
+	@Override
+	public SessionConfig getConfig() {
+		return config;
+	}
+	/* (non-Javadoc)
      * @see me.huzorro.gateway.Message#incrementAndGetRequests()
      */
     @Override
@@ -71,6 +88,15 @@ public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
     public Message<?> getResponse() {
         return response;
     }
+	@Override
+	public Message<?> setRequest(Message<?> message) {
+		this.request = message;
+		return this;
+	}
+	@Override
+	public Message<?> getRequest() {
+		return request;
+	}    
     /* (non-Javadoc)
      * @see me.huzorro.gateway.Message#getRequests()
      */
@@ -121,14 +147,16 @@ public class DefaultMessage<T extends ChannelBuffer> implements Message<T>  {
     public Object getAttachment() {
         return attachment;
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return String
-                .format("DefaultMessage [channelIds=%s, requests=%s, response=%s, header=%s]",
-                        channelIds, requests, response, header);
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String
+				.format("DefaultMessage [packetType=%s, timestamp=%s, config=%s, requests=%s, response=%s, request=%s, header=%s, buffer=%s, attachment=%s, isTerminationLife()=%s]",
+						packetType, timestamp, config, requests.get(), response,
+						request, header, buffer, attachment,
+						isTerminationLife());
+	}
     
 }

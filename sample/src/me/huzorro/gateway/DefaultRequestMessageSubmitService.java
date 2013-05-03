@@ -48,7 +48,7 @@ public class DefaultRequestMessageSubmitService implements Service {
                     public void run() {
                         while(true) {
                             try {
-                                Session session = pool.take(config);
+                                Session session = pool.take(config.getChannelIds());
                                 Constructor<?>  constructor = requestSubmitProcessor.getConstructor(BlockingQueue.class, Session.class);
                                 Processor processor = (Processor) constructor.newInstance(requestMsgQueueMap.get(config), session);
                                 executorServiceMap.get(config).execute(processor);
