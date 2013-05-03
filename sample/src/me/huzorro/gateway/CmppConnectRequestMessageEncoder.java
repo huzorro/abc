@@ -1,16 +1,15 @@
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.PacketStructure;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.Shorts;
+import com.google.common.primitives.Bytes;
 
 /**
  *
@@ -34,27 +33,29 @@ public class CmppConnectRequestMessageEncoder extends OneToOneEncoder {
     @SuppressWarnings("unchecked")
     protected Object encode(ChannelHandlerContext ctx, Channel channel,
             Object msg) throws Exception {
-        CmppConnectRequestMessage<ChannelBuffer> message = (CmppConnectRequestMessage<ChannelBuffer>) msg;
+    	if(!(msg instanceof Message<?>)) return msg;
+    	Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()) return msg;
-        ChannelBuffer bodyBuffer = ChannelBuffers.dynamicBuffer();
-        bodyBuffer.writeBytes(message.getSourceAddr().getBytes(GlobalVars.defaultTransportCharset));
-        bodyBuffer.writeBytes(message.getAuthenticatorSource());
         
-        byte[] versionBytes = Shorts.toByteArray(message.getVersion());
-        byte[] versionUnsignedIns = 
-                ArrayUtils.subarray(versionBytes, 1, 2);
-        bodyBuffer.writeBytes(versionUnsignedIns);
-        byte[] timestampBytes = Longs.toByteArray(message.getTimestamp());
-        byte[] timestampUnsignedIns = 
-                ArrayUtils.subarray(timestampBytes, 4, 8);
-        bodyBuffer.writeBytes(timestampUnsignedIns);
+        CmppConnectRequestMessage<ChannelBuffer> requestMessage = (CmppConnectRequestMessage<ChannelBuffer>) message;
+
+        ChannelBuffer bodyBuffer = ChannelBuffers.dynamicBuffer();
+		bodyBuffer.writeBytes(Bytes.ensureCapacity(requestMessage
+				.getSourceAddr().getBytes(GlobalVars.defaultTransportCharset),
+				PacketStructure.ConnectRequest.SOURCEADDR.getLength(), 0));
+		
+        bodyBuffer.writeBytes(requestMessage.getAuthenticatorSource());
+        
+        bodyBuffer.writeByte(requestMessage.getVersion());
+        bodyBuffer.writeInt((int) requestMessage.getTimestamp());
         
         message.setBodyBuffer(bodyBuffer);
         
         ChannelBuffer messageBuffer = ChannelBuffers.dynamicBuffer();
         messageBuffer.writeBytes(message.getHeader().getHeadBuffer());
         messageBuffer.writeBytes(message.getBodyBuffer());
+        
         
         return messageBuffer;
     }

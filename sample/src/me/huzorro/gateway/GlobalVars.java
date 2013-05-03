@@ -3,7 +3,6 @@ package me.huzorro.gateway;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicLong;
@@ -32,18 +31,17 @@ public class GlobalVars {
     public static Map<String, SessionConfig> downstreamSessionConfigMap = new HashMap<String, SessionConfig>();
     public static Map<Map<String, SessionConfig>, SessionPool> sessionPoolMap = new HashMap<Map<String, SessionConfig>, SessionPool>();
     
-    public static Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> requestMsgQueueMap = 
-            new HashMap<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>>();
+    public static Map<Object, BdbQueueMap<Long, MessageFuture>> requestMsgQueueMap = 
+    		new HashMap<Object, BdbQueueMap<Long, MessageFuture>>();
     
     
-    public static Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> responseMsgQueueMap = 
-            new HashMap<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>>();
+    public static Map<Object, BdbQueueMap<Long, MessageFuture>> responseMsgQueueMap = 
+    		new HashMap<Object, BdbQueueMap<Long, MessageFuture>>();
     
-    public static Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> deliverMsgQueueMap = 
-            new HashMap<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>>();
     
-    public static Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> messageQueueMap = 
-            new HashMap<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>>();
+    public static Map<Object, BdbQueueMap<Long, MessageFuture>> deliverMsgQueueMap = 
+    		new HashMap<Object, BdbQueueMap<Long, MessageFuture>>();
+
     
     public static Map<SessionConfig, ExecutorService> executorServiceMap = new HashMap<SessionConfig, ExecutorService>();
     public static Map<SessionConfig, ScheduledExecutorService> scheduleExecutorMap = new HashMap<SessionConfig, ScheduledExecutorService>();

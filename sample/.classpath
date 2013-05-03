@@ -57,5 +57,10 @@
 			<attribute name="javadoc_location" value="jar:file:/F:/备份20130419/java依赖包/sqlite-jdbc-3.7.15-SNAPSHOT-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/je-5.0.73.jar" sourcepath="F:/备份20130419/java依赖包/je-5.0.73/je-5.0.73/src">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/F:/备份20130419/java依赖包/je-5.0.73/je-5.0.73/docs/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

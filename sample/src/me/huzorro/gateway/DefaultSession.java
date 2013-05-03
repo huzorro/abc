@@ -1,6 +1,5 @@
 package me.huzorro.gateway;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
@@ -26,10 +25,9 @@ public  class DefaultSession implements Session {
     private Channel channel;
     private Object attachment;
     private ConcurrentMap<Object, MessageFuture> requestMap = new ConcurrentHashMap<Object, MessageFuture>();
-    private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue;
-    private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue;
-    private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue;
-    private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueue;
+    private BdbQueueMap<Long, MessageFuture> responseQueue;
+    private BdbQueueMap<Long, MessageFuture> requestQueue;
+    private BdbQueueMap<Long, MessageFuture> deliverQueue;
     private ConcurrentMap<Object, Future<?>> scheduledTaskMap = new ConcurrentHashMap<Object, Future<?>>();
     private ScheduledExecutorService scheduledExecutor;
     private SessionConfig config;
@@ -37,10 +35,9 @@ public  class DefaultSession implements Session {
     private SessionCloseFuture closeFuture = new SessionCloseFuture(this);
     private SessionLoginFuture loginFuture = new SessionLoginFuture(this);
     public DefaultSession(Channel channel,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueue,
+    		BdbQueueMap<Long, MessageFuture> requestQueue,
+    		BdbQueueMap<Long, MessageFuture> responseQueue,
+    		BdbQueueMap<Long, MessageFuture> deliverQueue,
             ScheduledExecutorService scheduleExecutor,
             SessionConfig config) {
         setChannel(channel);
@@ -48,7 +45,6 @@ public  class DefaultSession implements Session {
         this.responseQueue = responseQueue;
         this.requestQueue = requestQueue;
         this.deliverQueue = deliverQueue;
-        this.messageQueue = messageQueue;
         this.scheduledExecutor = scheduleExecutor;        
         windows = new Semaphore(this.config.getWindows());
     }
@@ -98,14 +94,7 @@ public  class DefaultSession implements Session {
     public void writeResponse(Message<?> message) throws InterruptedException {
         MessageFuture requestFuture = requestMap.remove(message.getHeader().getSequenceId());
         MessageFuture responseFuture = new MessageFuture(requestFuture.getMessage().setResponse(message));
-        responseFuture.addListener(new QFutureListener() {
-            @Override
-            public void onComplete(QFuture future) {
-                if(future.isSuccess()) messageQueue.remove((MessageFuture) future);
-            }
-        });
         responseQueue.put(responseFuture);        
-        messageQueue.put(responseFuture);
         requestFuture.setSuccess();
         windows.release();
     }
@@ -150,7 +139,7 @@ public  class DefaultSession implements Session {
                     }
                 }
             }
-        } , config.getRetryWaitTime(), TimeUnit.MILLISECONDS);
+        } , config.getRetryWaitTime(), TimeUnit.SECONDS);
         scheduledTaskMap.put(messageFuture.getMessage().getHeader().getSequenceId(), future);
         logger.debug("The request to send a message number is {}", messageFuture.getMessage().getRequests());
     }
@@ -168,13 +157,6 @@ public  class DefaultSession implements Session {
     @Override
     public void writeDeliver(Message<?> message) throws Exception {
         MessageFuture messageFuture = new MessageFuture(message);
-        messageFuture.addListener(new QFutureListener() {
-            @Override
-            public void onComplete(QFuture future) {
-                if(future.isSuccess()) messageQueue.remove((MessageFuture) future);
-            }
-        });
-        messageQueue.put(messageFuture);
         deliverQueue.put(messageFuture);
     }    
     /* (non-Javadoc)

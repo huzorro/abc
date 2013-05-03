@@ -1,5 +1,6 @@
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.PacketStructure;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.apache.commons.codec.binary.Hex;
@@ -12,9 +13,9 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public class CmppConnectResponseMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
     private static final long serialVersionUID = -5010314567064353091L;
-    private long status;
-    private byte[] authenticatorISMG;
-    private short version;
+    private long status = 3;
+    private byte[] authenticatorISMG = new byte[PacketStructure.ConnectResponse.AUTHENTICATORISMG.getLength()];
+    private short version = 0x30;
     
     
     public CmppConnectResponseMessage() {

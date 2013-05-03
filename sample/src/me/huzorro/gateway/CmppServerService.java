@@ -53,7 +53,6 @@ public class CmppServerService implements Service {
                 CmppGlobalVars.requestMsgQueueMap, 
                 CmppGlobalVars.responseMsgQueueMap, 
                 CmppGlobalVars.deliverMsgQueueMap, 
-                CmppGlobalVars.messageQueueMap, 
                 CmppGlobalVars.scheduleExecutorMap, 
                 CmppGlobalVars.sessionPoolMap);
         

@@ -34,14 +34,13 @@ public class CmppConnectResponseMessageHandler extends
     public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
             throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) e.getMessage();
-        long commandId = ((Integer) message.getHeader().getCommandId()).intValue();
+        long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()){
             super.messageReceived(ctx, e);
             return;
         }        
         CmppConnectResponseMessage<ChannelBuffer> connectResponseMessage = (CmppConnectResponseMessage<ChannelBuffer>) message;
         Session session = (Session) ctx.getChannel().getAttachment();
-        connectResponseMessage.setChannelIds(session.getConfig().getChannelIds());
         
         logger.info(message.toString());
         

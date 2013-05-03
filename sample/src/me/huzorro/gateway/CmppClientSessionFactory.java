@@ -1,6 +1,5 @@
 package me.huzorro.gateway;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.jboss.netty.channel.ChannelFuture;
@@ -26,13 +25,12 @@ public class CmppClientSessionFactory<T extends CmppSession> extends DefaultClie
             NettyTcpClient<ChannelFuture> nettyTcpClient,
             Factory<?> messageFactory,
             SessionConfig config,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueue,
+            BdbQueueMap<Long, MessageFuture> requestQueue,
+            BdbQueueMap<Long, MessageFuture> responseQueue,
+            BdbQueueMap<Long, MessageFuture> deliverQueue,
             ScheduledExecutorService scheduleExecutor, SessionPool sessionPool) {
         super(nettyTcpClient, messageFactory, config, requestQueue, responseQueue,
-                deliverQueue, messageQueue, scheduleExecutor, sessionPool);
+                deliverQueue, scheduleExecutor, sessionPool);
     }
 
 }

@@ -1,5 +1,8 @@
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.PacketType;
+
 import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
@@ -9,40 +12,68 @@ import org.jboss.netty.buffer.ChannelBuffer;
  */
 public class CmppSubmitRequestMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
     private static final long serialVersionUID = 1369427662600486133L;
-    private byte[] msgid;
-    private short pktotal;
-    private short pknumber;
-    private short registeredDelivery;
-    private short msglevel;
-    private String serviceId;
-    private short feeUserType;
-    private String feeterminalId;
-    private short feeterminaltype;
-    private short tppId;
-    private short tpudhi;
-    private short msgFmt;
-    private String msgsrc;
-    private String feeType;
-    private String feeCode;
-    private String valIdTime;
-    private String atTime;
-    private String srcId;
-    private short destUsrtl;
-    private String destterminalId;
-    private short destterminaltype;
-    private short msgLength;
-    private String msgContent;
-    private String linkID;
-    /**
+    private MsgId msgid = new MsgId();
+    private short pktotal = 1;
+    private short pknumber = 1;
+    private short registeredDelivery = 1;
+    private short msglevel = 1;
+	private String serviceId = new String(
+			new byte[PacketStructure.SubmitRequest.SERVICEID.getLength()],
+			GlobalVars.defaultTransportCharset);
+    private short feeUserType = 3;
+	private String feeterminalId = new String(
+			new byte[PacketStructure.SubmitRequest.FEETERMINALID.getLength()],
+			GlobalVars.defaultTransportCharset);
+    private short feeterminaltype = 0;
+    private short tppId = 0;
+    private short tpudhi = 0;
+    private short msgFmt = 15;
+	private String msgsrc = new String(
+			new byte[PacketStructure.SubmitRequest.MSGSRC.getLength()],
+			GlobalVars.defaultTransportCharset);
+    private String feeType = "01";
+	private String feeCode = new String(
+			new byte[PacketStructure.SubmitRequest.FEECODE.getLength()],
+			GlobalVars.defaultTransportCharset);
+	private String valIdTime = new String(
+			new byte[PacketStructure.SubmitRequest.VALIDTIME.getLength()],
+			GlobalVars.defaultTransportCharset);
+	private String atTime = new String(
+			new byte[PacketStructure.SubmitRequest.ATTIME.getLength()],
+			GlobalVars.defaultTransportCharset);
+	private String srcId = new String(
+			new byte[PacketStructure.SubmitRequest.SRCID.getLength()],
+			GlobalVars.defaultTransportCharset);
+    private short destUsrtl = 1;
+	private String destterminalId = new String(
+			new byte[PacketStructure.SubmitRequest.DESTTERMINALID.getLength()],
+			GlobalVars.defaultTransportCharset);
+    private short destterminaltype = 0;
+    private short msgLength = 140;
+	private String msgContent = new String(new byte[msgLength],
+			GlobalVars.defaultTransportCharset);
+	private String linkID = new String(
+			new byte[PacketStructure.SubmitRequest.LINKID.getLength()],
+			GlobalVars.defaultTransportCharset);
+	
+	private byte[] msgContentBytes = new byte[msgLength];
+	
+	public CmppSubmitRequestMessage() {
+		this(PacketType.CMPPSUBMITREQUEST);
+	}
+	public CmppSubmitRequestMessage(PacketType packetType) {
+		setPacketType(packetType);
+	}
+	/**
      * @return the msgid
      */
-    public byte[] getMsgid() {
+    public MsgId getMsgid() {
         return msgid;
     }
     /**
      * @param msgid the msgid to set
      */
-    public void setMsgid(byte[] msgid) {
+    public void setMsgid(MsgId msgid) {
         this.msgid = msgid;
     }
     /**
@@ -176,6 +207,7 @@ public class CmppSubmitRequestMessage<T extends ChannelBuffer> extends DefaultMe
      */
     public void setMsgFmt(short msgFmt) {
         this.msgFmt = msgFmt;
+        if(((0 | 4 | 8) & this.msgFmt) == this.msgFmt) setTpudhi((short)1);
     }
     /**
      * @return the msgsrc
@@ -308,6 +340,7 @@ public class CmppSubmitRequestMessage<T extends ChannelBuffer> extends DefaultMe
      */
     public void setMsgContent(String msgContent) {
         this.msgContent = msgContent;
+        setMsgContentBytes(this.msgContent.getBytes(GlobalVars.defaultTransportCharset));
     }
     /**
      * @return the linkID
@@ -321,5 +354,18 @@ public class CmppSubmitRequestMessage<T extends ChannelBuffer> extends DefaultMe
     public void setLinkID(String linkID) {
         this.linkID = linkID;
     }
+    /**
+	 * @return the msgContentBytes
+	 */
+	public byte[] getMsgContentBytes() {
+		return msgContentBytes;
+	}
+	/**
+	 * @param msgContentBytes the msgContentBytes to set
+	 */
+	public void setMsgContentBytes(byte[] msgContentBytes) {
+		this.msgContentBytes = msgContentBytes;
+		setMsgLength((short) msgContentBytes.length);
+	}    
     
 }

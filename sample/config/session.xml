@@ -8,19 +8,23 @@
               <port>7891</port>
               <user>901077</user>
               <passwd>ICP</passwd>
+              <gateId>1010</gateId>
               <version>1</version>
+              <idleTime>180</idleTime>
+              <lifeTime>259200</lifeTime>
               <maxRetry>3</maxRetry>
               <retryWaitTime>60</retryWaitTime>
-              <maxSessions>5</maxSessions>
+              <maxSessions>1</maxSessions>
               <windows>16</windows>
               <generalThreadNum>0</generalThreadNum>
               <scheduleThreadNum>0</scheduleThreadNum>
-              <requestQueueSize>160</requestQueueSize>
-              <responseQueueSize>0</responseQueueSize>
-              <deliverQueueSize>160</deliverQueueSize>
-              <requestQueueSequence>1</requestQueueSequence>
-              <responseQueueSequence>1</responseQueueSequence>
-              <deliverQueueSequence>1</deliverQueueSequence>
+              
+              <requestQueueName>request1</requestQueueName>
+              <responseQueueName>response1</responseQueueName>
+              <deliverQueueName>deliver1</deliverQueueName>
+              <requestQueuePathHome>z:\\temp</requestQueuePathHome>
+              <responseQueuePathHome>z:\\temp</responseQueuePathHome>
+              <deliverQueuePathHome>z:\\temp</deliverQueuePathHome>
 
             </upstream>
             <downstream>
@@ -28,19 +32,23 @@
               <port>7891</port>
               <user>901077</user>
               <passwd>ICP</passwd>
+              <gateId>1010</gateId>
               <version>0</version>
+              <idleTime>180</idleTime>
+              <lifeTime>259200</lifeTime>
               <maxRetry>3</maxRetry>
               <retryWaitTime>60</retryWaitTime>
               <maxSessions>5</maxSessions>
               <windows>16</windows>
               <generalThreadNum>0</generalThreadNum>
               <scheduleThreadNum>0</scheduleThreadNum>
-              <requestQueueSize>160</requestQueueSize>
-              <responseQueueSize>16000</responseQueueSize>
-              <deliverQueueSize>160</deliverQueueSize>
-              <requestQueueSequence>1</requestQueueSequence>
-              <responseQueueSequence>1</responseQueueSequence>
-              <deliverQueueSequence>1</deliverQueueSequence>              
+              
+              <requestQueueName>reques2</requestQueueName>
+              <responseQueueName>response2</responseQueueName>
+              <deliverQueueName>deliver2</deliverQueueName>
+              <requestQueuePathHome>z:\\temp</requestQueuePathHome>
+              <responseQueuePathHome>z:\\temp</responseQueuePathHome>
+              <deliverQueuePathHome>z:\\temp</deliverQueuePathHome>          
             </downstream>
             
             <duplexstream>
@@ -48,19 +56,23 @@
               <port>7891</port>
               <user>901077</user>
               <passwd>ICP</passwd>
-              <version>48</version>          
+              <gateId>1010</gateId>
+              <version>48</version>  
+              <idleTime>180</idleTime>
+              <lifeTime>259200</lifeTime>
               <maxRetry>3</maxRetry>
               <retryWaitTime>60</retryWaitTime>
               <maxSessions>1</maxSessions>
               <windows>16</windows>
               <generalThreadNum>0</generalThreadNum>
               <scheduleThreadNum>0</scheduleThreadNum>
-              <requestQueueSize>160</requestQueueSize>
-              <responseQueueSize>16000</responseQueueSize>
-              <deliverQueueSize>160</deliverQueueSize>
-              <requestQueueSequence>1</requestQueueSequence>
-              <responseQueueSequence>1</responseQueueSequence>
-              <deliverQueueSequence>1</deliverQueueSequence>              
+              
+              <requestQueueName>request3</requestQueueName>
+              <responseQueueName>response3</responseQueueName>
+              <deliverQueueName>deliver3</deliverQueueName>
+              <requestQueuePathHome>z:\\temp</requestQueuePathHome>
+              <responseQueuePathHome>z:\\temp</responseQueuePathHome>
+              <deliverQueuePathHome>z:\\temp</deliverQueuePathHome>           
             </duplexstream>            
         </session>
     </sessions>

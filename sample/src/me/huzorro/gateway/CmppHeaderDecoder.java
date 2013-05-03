@@ -39,8 +39,7 @@ public class CmppHeaderDecoder extends FrameDecoder {
         header.setHeadBuffer(headBuffer.copy());
         
         header.setPacketLength(headBuffer.readUnsignedInt());
-//        header.setCommandId(headBuffer.readUnsignedInt());
-        header.setCommandId(headBuffer.readInt());
+        header.setCommandId(Long.valueOf(Integer.toString(headBuffer.readInt())));
         header.setSequenceId(headBuffer.readUnsignedInt());
         
         
@@ -59,6 +58,8 @@ public class CmppHeaderDecoder extends FrameDecoder {
         Message<ChannelBuffer> message = new DefaultMessage<ChannelBuffer>();
         message.setBodyBuffer(bodyBuffer);
         message.setHeader(header);
+		message.setConfig(((Session) ctx.getChannel().getAttachment())
+				.getConfig());
         return message;
     }
 
@@ -68,6 +69,7 @@ public class CmppHeaderDecoder extends FrameDecoder {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 			throws Exception {
+		e.getCause().printStackTrace();
 		ctx.getChannel().close();
 		return;
 	}

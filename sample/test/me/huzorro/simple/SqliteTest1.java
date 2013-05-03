@@ -41,7 +41,8 @@ public class SqliteTest1 {
 				System.out.println(new String(rs.getBytes("desc"),  "GBK"));
 				System.out.println(new String("我们的".getBytes(), "utf-8"));
 				System.out.println(rs.getString("createtime"));
-                		System.out.println("test...");
+				System.out.println("test...");
+				System.out.println("t1.");
 			}
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block

@@ -1,37 +1,25 @@
 package me.huzorro.gateway;
 
-import java.io.UnsupportedEncodingException;
 import static java.lang.System.out;
+
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
+import java.text.DecimalFormat;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ListIterator;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import me.huzorro.gateway.cmpp.DataType;
-import me.huzorro.gateway.cmpp.PacketStructure;
-import me.huzorro.gateway.cmpp.PacketType;
-
-import org.apache.commons.codec.binary.BinaryCodec;
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.configuration.CombinedConfiguration;
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.ConfigurationFactory;
 import org.apache.commons.configuration.DefaultConfigurationBuilder;
 import org.apache.commons.configuration.HierarchicalConfiguration;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -39,24 +27,17 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.HashCode;
+import com.google.common.base.Strings;
 import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
+import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.UnsignedInts;
+import com.google.common.primitives.Shorts;
 import com.google.common.primitives.UnsignedLongs;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  *
@@ -254,18 +235,274 @@ public class CommonsConfigTest {
         return md5Str.toString();
     }
     
+    public static String decodeMsgid(byte[] buffer) {
+        byte[] dateBuf = new byte[4];
+        byte[] gateWayIDBuf = new byte[4];
+        byte[] serialBuf = new byte[3];
+        BigInteger aa = new BigInteger(buffer);
+
+        System.arraycopy(buffer, 0, dateBuf, 0, 4);
+        System.arraycopy(buffer, 3, gateWayIDBuf, 1, 3);
+        System.arraycopy(buffer, 6, serialBuf, 1, 2);
+
+        BigInteger bigIntdate = new BigInteger(dateBuf);
+        BigInteger bigIntGateID = new BigInteger(gateWayIDBuf);
+        BigInteger bigIntSerial = new BigInteger(serialBuf);
+
+        int intDate = bigIntdate.intValue();
+        int intGateID = bigIntGateID.intValue();
+        int intSerial = bigIntSerial.intValue();
+
+        intGateID = (intGateID) & 0x3fffff;
+        intSerial = (intSerial) & 0xffff;
+
+        int mon = intDate >>> 28;
+        int day = (intDate >>> 23) & 0x1f;
+        int hh = (intDate >>> 18) & 0x1f;
+        int mm = (intDate >>> 12) & 0x3f;
+        int ss = (intDate >>> 6) & 0x3f;
+
+        StringBuffer msgIDBuf = new StringBuffer();
+        DecimalFormat df = new DecimalFormat("#");
+        df.setMinimumIntegerDigits(2);
+
+        msgIDBuf.append(df.format(mon));
+        msgIDBuf.append(df.format(day));
+        msgIDBuf.append(df.format(hh));
+        msgIDBuf.append(df.format(mm));
+        msgIDBuf.append(df.format(ss));
+
+        df.setMinimumIntegerDigits(6);
+
+        msgIDBuf.append(df.format(intGateID));
+        df.setMinimumIntegerDigits(5);
+        msgIDBuf.append(df.format(intSerial));
+        return msgIDBuf.toString();
+      }  
+    public static String parseMsgId(byte[] msgId) {
+        long result = ByteBuffer.wrap(msgId).getLong();
+        out.println(result);
+        int month = (int)((result >>> 60) & 0xf);
+        int day = (int)((result >>> 55) & 0x1f);
+        int hour = (int)((result >>> 50) & 0x1f);
+        int min = (int)((result >>> 44) & 0x3f);
+        int sec = (int)((result >>> 38) & 0x3f);
+        int gate = (int)((result >>> 16) & 0x3fffff);
+        int sequence = (int)(result & 0xffff);
+        return String.format("%1$02d%2$02d%3$02d%4$02d%5$02d%6$07d%7$05d", month, day, hour, min, sec, gate, sequence);
+    }    
+    public static byte[] createMsgId(int...msgId) {
+        byte[] tmp = new byte[8];
+        long result = 0;
+        result |= (long)msgId[0] << 60L;
+        result |= (long)msgId[1] << 55L;
+        result |= (long)msgId[2] << 50L;
+        result |= (long)msgId[3] << 44L;
+        result |= (long)msgId[4] << 38L;
+        result |= (long)msgId[5] << 16L;
+        result |= (long)msgId[6] & 0xffffL;
+        ByteBuffer.wrap(tmp).putLong(result);           
+        return tmp;
+    }
     
+    public static void linkedListTest() {
+        List<String> list = new LinkedList<String>();
+        
+        list.add("a");
+        list.add("b");
+        
+        ListIterator<String> nit = list.listIterator();
+        ListIterator<String> pit = list.listIterator(list.size());
+        while(nit.hasNext()) {
+            out.println(nit.next());
+        }
+        
+        while(pit.hasPrevious()) {
+            out.println(pit.previous());
+        }
+    }
+    
+    public static long getSequenceId() {
+    	return GlobalVars.sequenceId.compareAndSet(Integer.MAX_VALUE, 0) 
+    			? GlobalVars.sequenceId.getAndIncrement() 
+    			: GlobalVars.sequenceId.getAndIncrement();
+    }
     /**
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss"));
+    	int a = 123;
+    	long b = 123;
+    	Object o = Long.valueOf(Integer.toString(a)); 
+    	System.out.println(o);
+    	System.out.println(((long) o) == b);
+    	
+    	byte[] bytes = "abc".getBytes();
+    	
+    	String hexStr = Hex.encodeHexString(bytes);
+    	out.println(hexStr);
+    	
+    	
+    	try {
+    		byte[] bs = Hex.decodeHex(hexStr.toCharArray());
+    		out.println(new String(ArrayUtils.subarray(bs, 0, 3)) + "~~");
+		} catch (DecoderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	
+    	byte[] ints = Ints.toByteArray(123);
+    	
+    	out.println(Ints.fromByteArray(ints) + "##");
+    	
+    	out.println(Ints.fromByteArray(ArrayUtils.subarray(ints, 0, 4)));
+    	
+    	
+    	
+    	out.println(Strings.repeat("-", 30));
+    	byte[] mixBytes = Bytes.concat(bytes, ints); 
+    	
+    	String mixString = Hex.encodeHexString(mixBytes);
+    	out.println(mixString + "#%");
+    	byte[] convMixBytes = null;
+    	try {
+			convMixBytes = Hex.decodeHex(mixString.toCharArray());
+			out.println(convMixBytes.length);
+		} catch (DecoderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	out.println(new String(ArrayUtils.subarray(convMixBytes, 0, 3)));
+    	
+    	out.println(Ints.fromByteArray(ArrayUtils.subarray(convMixBytes, 3, 7)));
+    	
+    	out.println(15 & 0x01);
+    	
+    	byte[] bb = new byte[8];
+    	
+    	out.println(Hex.encodeHexString(bb));
+    	
+    	out.println(Strings.repeat("==", 50));
+    	
+    	String msgidHexStr = "572806C003F22471";
+    	
+    	try {
+    		out.println(Strings.repeat("=", 100));
+			byte[] msgidBytes = Hex.decodeHex(msgidHexStr.toCharArray());
+			String msgStr = CommonsConfigTest.decodeMsgid(msgidBytes);
+			out.println(msgStr);
+			out.println(CommonsConfigTest.parseMsgId(msgidBytes));
+			out.println(Strings.repeat("=", 100));
+			
+		} catch (DecoderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	out.println(UnsignedLongs.parseUnsignedLong(msgidHexStr, 16));
+    	
+    	out.println(Hex.encodeHexString(CommonsConfigTest.createMsgId(5,14,10,0,27,1010,9329)));
+    	
+    	out.println(Hex.encodeHexString(new byte[]{0xf}));
+    	
+//    	信息标识。
+//    	生成算法如下：
+//    	采用64位（8字节）的整数：
+//    	（1）	时间（格式为MMDDHHMMSS，即月日时分秒）：bit64~bit39，其中
+//    	bit64~bit61：月份的二进制表示；
+//    	bit60~bit56：日的二进制表示；
+//    	bit55~bit51：小时的二进制表示；
+//    	bit50~bit45：分的二进制表示；
+//    	bit44~bit39：秒的二进制表示；
+//    	（2）	短信网关代码：bit38~bit17，把短信网关的代码转换为整数填写到该字段中；
+//    	（3）	序列号：bit16~bit1，顺序增加，步长为1，循环使用。
+//    	各部分如不能填满，左补零，右对齐。
+    	
+    	out.println(String.format("%010d", 123));
+    	
+    	short sh = -123 & 0xff;
+    	byte by = (byte)133;
 
-        System.out.println(Long.parseLong(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss")));
-        
-        long t = Long.parseLong(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss"));
-        
-        System.out.println(Long.toString(t).length());
+    	out.println(by);
+    	
+    	byte[] shs = Shorts.toByteArray(sh);
+    	
+    	byte[] bys = ArrayUtils.subarray(shs, 1, 8);
+    	
+    	out.println(ByteBuffer.wrap(bys).get());
+    	
+    	CommonsConfigTest.linkedListTest();
+    	
+    	GlobalVars.sequenceId.set(Long.MAX_VALUE);
+    	out.println(GlobalVars.sequenceId.get());
+    	for(int i = 0 ; i < 10; i++) {
+        	out.println(GlobalVars.sequenceId.incrementAndGet());
+    	}
+    	
+    	
+    	out.println(Strings.repeat("=", 100));
+    	out.println(GlobalVars.sequenceId.get());
+    	out.println(CommonsConfigTest.getSequenceId());
+    	out.println(CommonsConfigTest.getSequenceId());
+    	
+    	out.println(System.currentTimeMillis());
+    	
+    	String str = String.format("%TF %<TT", System.currentTimeMillis());
+    	
+    	out.println(str);
+    	
+    	out.println(String.format("%tY-%<tm-%<td %<tH:%<tM:%<tS", System.currentTimeMillis()));
+    	
+    	
+    	
+    	out.println(Strings.repeat("//", 60));
+    	
+    	ChannelBuffer _dc = ChannelBuffers.dynamicBuffer();
+    	
+    	
+    	
+    	byte[] _gb = Bytes.ensureCapacity("我a".getBytes(GlobalVars.defaultLocalCharset), 16, 0);
+    	
+    	out.println(_gb.length);
+    	
+    	out.println(new String(_gb, GlobalVars.defaultTransportCharset).trim() + "//");
+    	
+    	_dc.writeBytes(_gb);
+    	
+    	out.println(_dc.toString(GlobalVars.defaultLocalCharset) + "//");
+    	
+    	ChannelBuffer _cBuffer = ChannelBuffers.dynamicBuffer();
+    	
+    	_cBuffer.writeBytes("Abc".getBytes(GlobalVars.defaultTransportCharset));
+    	
+    	out.println(_cBuffer.readBytes(0).array().length);
+    	out.println(_cBuffer.readBytes(0).toString(GlobalVars.defaultTransportCharset) + "//");
+    	out.println(_cBuffer.readableBytes() + "//");
+    	
+    	
+    	String s1 = new MsgId().toString();
+    	String s2 = new MsgId().toString(); 
+    	
+    	out.println(s1.compareTo(s2));
+    	
+    	Long lastKey = Long.valueOf(1);
+    	lastKey = (lastKey == null) ? 1L : ++lastKey;
+    	
+    	out.println(lastKey);
+//    	System.out.println("@" + new String(
+//    			new byte[0],
+//    			GlobalVars.defaultTransportCharset) + "@");
+//    	System.out.println(new byte[0].length);
+//    	System.out.println("\0".equals(new String(new byte[1], GlobalVars.defaultLocalCharset)));
+//        System.out.println(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss"));
+//
+//        System.out.println(Long.parseLong(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss")));
+//        
+//        long t = Long.parseLong(DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss"));
+//        
+//        System.out.println(Long.toString(t).length());
 //        Message<ChannelBuffer> m = new DefaultMessage<ChannelBuffer>();
 //        DefaultHead<ChannelBuffer> h = new DefaultHead<ChannelBuffer>();
 //        m.setHeader(h);

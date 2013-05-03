@@ -1,7 +1,6 @@
 package me.huzorro.gateway;
 
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -19,10 +18,9 @@ public class CmppUpstreamClientService implements Service {
     private final Logger logger = LoggerFactory.getLogger(CmppUpstreamClientService.class);
     private Map<String, SessionConfig> configMap;
     private Map<SessionConfig, ClientBootstrap> clientBootstrapMap;
-    private Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> requestMsgQueueMap;
-    private Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> responseMsgQueueMap;
-    private Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> deliverMsgQueueMap;
-    private Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>>messageQueueMap;
+    private Map<Object, BdbQueueMap<Long, MessageFuture>> requestMsgQueueMap;
+    private Map<Object, BdbQueueMap<Long, MessageFuture>> responseMsgQueueMap;
+    private Map<Object, BdbQueueMap<Long, MessageFuture>> deliverMsgQueueMap;
     private Map<SessionConfig, ScheduledExecutorService> scheduleExecutorMap;
     private Map<Map<String, SessionConfig>, SessionPool> sessionPoolMap;   
     /**
@@ -39,10 +37,9 @@ public class CmppUpstreamClientService implements Service {
     public CmppUpstreamClientService(
             Map<String, SessionConfig> configMap,
             Map<SessionConfig, ClientBootstrap> clientBootstrapMap,
-            Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> requestMsgQueueMap,
-            Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>>responseMsgQueueMap,
-            Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> deliverMsgQueueMap,
-            Map<Object, ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>> messageQueueMap,
+            Map<Object, BdbQueueMap<Long, MessageFuture>> requestMsgQueueMap,
+            Map<Object, BdbQueueMap<Long, MessageFuture>> responseMsgQueueMap,
+            Map<Object, BdbQueueMap<Long, MessageFuture>> deliverMsgQueueMap,
             Map<SessionConfig, ScheduledExecutorService> scheduleExecutorMap,
             Map<Map<String, SessionConfig>, SessionPool> sessionPoolMap
             ) {
@@ -51,7 +48,6 @@ public class CmppUpstreamClientService implements Service {
         this.requestMsgQueueMap = requestMsgQueueMap;
         this.responseMsgQueueMap = requestMsgQueueMap;
         this.deliverMsgQueueMap = deliverMsgQueueMap;
-        this.messageQueueMap = messageQueueMap;
         this.scheduleExecutorMap = scheduleExecutorMap;
         this.sessionPoolMap = sessionPoolMap;
     }
@@ -75,7 +71,7 @@ public class CmppUpstreamClientService implements Service {
     @Override
     public void process() throws Exception {
         for(SessionConfig config : configMap.values()) {
-            ChannelPipelineFactory pipelineFactory = new CmppUpstreamClientChannelPipelineFactory();
+            ChannelPipelineFactory pipelineFactory = new CmppUpstreamClientChannelPipelineFactory(config);
             NettyTcpClientFactory<NettyTcpClient<ChannelFuture>> tcpClientFactory = 
                     new NettyTcpClientFactory<NettyTcpClient<ChannelFuture>>(
                             config.getHost(), config.getPort(), pipelineFactory, clientBootstrapMap.get(config));
@@ -90,7 +86,6 @@ public class CmppUpstreamClientService implements Service {
                     requestMsgQueueMap.get(config), 
                     responseMsgQueueMap.get(config),
                     deliverMsgQueueMap.get(config), 
-                    messageQueueMap.get(config),
                     scheduleExecutorMap.get(config),
                     sessionPoolMap.get(configMap));   
             for(int i = 0; i < config.getMaxSessions(); i++) {

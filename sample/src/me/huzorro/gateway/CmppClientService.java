@@ -51,7 +51,6 @@ public class CmppClientService implements Service {
 				CmppGlobalVars.requestMsgQueueMap,
 				CmppGlobalVars.responseMsgQueueMap,
 				CmppGlobalVars.deliverMsgQueueMap,
-				CmppGlobalVars.messageQueueMap,
 				CmppGlobalVars.scheduleExecutorMap,
 				CmppGlobalVars.sessionPoolMap);      
         services.add(upstream);

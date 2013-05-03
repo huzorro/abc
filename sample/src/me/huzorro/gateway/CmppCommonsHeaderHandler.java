@@ -14,12 +14,12 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
  * @author huzorro
  *
  */
-public class CmppHeaderHandler extends OneToOneEncoder {
+public class CmppCommonsHeaderHandler extends OneToOneEncoder {
 
 	/**
 	 * 
 	 */
-	public CmppHeaderHandler() {
+	public CmppCommonsHeaderHandler() {
 		// TODO Auto-generated constructor stub
 	}
 
@@ -30,18 +30,21 @@ public class CmppHeaderHandler extends OneToOneEncoder {
 	@SuppressWarnings("unchecked")
 	protected Object encode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
+		if(!(msg instanceof Message<?>)) return msg;
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
-        if(!message.getPacketType().getPacketStructures()[0].isFixPacketLength()) {
-        	return msg;
-        }        
-        
+              
         Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
         header.setCommandId(message.getPacketType().getCommandId());
         header.setHeadLength(Head.COMMANDID.getHeadLength());
         header.setBodyLength(message.getPacketType().getPacketStructures()[0].getBodyLength());
         header.setPacketLength(header.getHeadLength() + header.getBodyLength());
-        header.setSequenceId(GlobalVars.sequenceId.getAndIncrement());
+		header.setSequenceId(message.getRequest() != null ? message
+				.getRequest().getHeader().getSequenceId()
+				: GlobalVars.sequenceId.compareAndSet(Integer.MAX_VALUE, 0) 
+				? GlobalVars.sequenceId.getAndIncrement()
+				: GlobalVars.sequenceId.getAndIncrement());
         message.setHeader(header);
+        message.setConfig(((Session)ctx.getChannel().getAttachment()).getConfig());
         return message;
 	}
 

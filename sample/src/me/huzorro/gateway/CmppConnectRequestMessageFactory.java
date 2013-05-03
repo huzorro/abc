@@ -26,7 +26,6 @@ public class CmppConnectRequestMessageFactory<T> implements Factory<T> {
         
         CmppConnectRequestMessage<ChannelBuffer> message = new CmppConnectRequestMessage<ChannelBuffer>();
         message.setSourceAddr(config.getUser());
-        message.setChannelIds(config.getChannelIds());
         message.setVersion(config.getVersion());
         String timestamp = DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss");
         message.setTimestamp(Long.parseLong(timestamp));

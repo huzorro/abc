@@ -3,7 +3,6 @@
  */
 package me.huzorro.gateway;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.jboss.netty.channel.Channel;
@@ -17,26 +16,23 @@ import org.slf4j.LoggerFactory;
  */
 public class DefaultServerSessionFactory<T> implements Factory<T> {
     private static final Logger logger = LoggerFactory.getLogger(DefaultServerSessionFactory.class);
-    private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue;
-    private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue;
-    private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue;
-    private ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueue;
+    private BdbQueueMap<Long, MessageFuture> requestQueue;
+    private BdbQueueMap<Long, MessageFuture> responseQueue;
+    private BdbQueueMap<Long, MessageFuture> deliverQueue;
     private ScheduledExecutorService scheduleExecutor;
     private SessionPool sessionPool;
     private SessionConfig config;
     private Channel channel;
 	public DefaultServerSessionFactory(            
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueue,
+			BdbQueueMap<Long, MessageFuture> requestQueue,
+			BdbQueueMap<Long, MessageFuture> responseQueue,
+			BdbQueueMap<Long, MessageFuture>deliverQueue,
             ScheduledExecutorService scheduleExecutor,
             SessionPool sessionPool
             ) {
         this.requestQueue = requestQueue;
         this.responseQueue = responseQueue;
         this.deliverQueue = deliverQueue;
-        this.messageQueue = messageQueue;
         this.scheduleExecutor = scheduleExecutor;
         this.sessionPool = sessionPool;
 	}    
@@ -45,10 +41,9 @@ public class DefaultServerSessionFactory<T> implements Factory<T> {
 	 */
 	public DefaultServerSessionFactory(            
             SessionConfig config,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueue,
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueue,
+            BdbQueueMap<Long, MessageFuture> requestQueue,
+            BdbQueueMap<Long, MessageFuture> responseQueue,
+            BdbQueueMap<Long, MessageFuture> deliverQueue,
             ScheduledExecutorService scheduleExecutor,
             SessionPool sessionPool,
             Channel channel
@@ -57,7 +52,6 @@ public class DefaultServerSessionFactory<T> implements Factory<T> {
         this.requestQueue = requestQueue;
         this.responseQueue = responseQueue;
         this.deliverQueue = deliverQueue;
-        this.messageQueue = messageQueue;
         this.scheduleExecutor = scheduleExecutor;
         this.sessionPool = sessionPool;
         this.channel = channel;
@@ -80,7 +74,7 @@ public class DefaultServerSessionFactory<T> implements Factory<T> {
 	@SuppressWarnings("unchecked")
 	public T create() throws Exception {
         final DefaultSession session = new DefaultSession(channel, 
-                requestQueue, responseQueue, deliverQueue, messageQueue, scheduleExecutor, config);
+                requestQueue, responseQueue, deliverQueue, scheduleExecutor, config);
         session.getLoginFuture().addListener(new QFutureListener() {
             
             @Override

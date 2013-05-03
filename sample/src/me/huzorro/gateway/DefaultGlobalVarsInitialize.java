@@ -1,11 +1,7 @@
 package me.huzorro.gateway;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -42,108 +38,46 @@ public class DefaultGlobalVarsInitialize implements GlobalVarsInitialize {
     /* (non-Javadoc)
      * @see me.huzorro.gateway.GlobalVarsInitialize#messageQueueInitialize()
      */
-    @Override
+	@Override
     public GlobalVarsInitialize messageQueueInitialize() {
         for(SessionConfig config : GlobalVars.upstreamSessionConfigMap.values()) {
-            Collection<BlockingQueue<MessageFuture>> deliverQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>();
-            for(int i = 0; i < config.getDeliverQueueSequence(); i++) {
-                deliverQueueNodes.add(new LinkedBlockingQueue<MessageFuture>(config.getDeliverQueueSize()));
-            }
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(deliverQueueNodes);
-            
-            GlobalVars.deliverMsgQueueMap.put(config, deliverQueueGroup);
-            
-            Collection<BlockingQueue<MessageFuture>> messageQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>(); 
-            messageQueueNodes.add(new LinkedBlockingQueue<MessageFuture>());
-            
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(messageQueueNodes);
-            
-            GlobalVars.messageQueueMap.put(config, messageQueueGroup);
-//            GlobalVars.deliverMsgQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>(config.getDeliverQueueSize()));
-//            GlobalVars.messageQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>());
+			GlobalVars.deliverMsgQueueMap.put(
+					config,
+					new BdbQueueMap<Long, MessageFuture>(config
+							.getDeliverQueuePathHome(), config
+							.getDeliverQueueName()));
         }
         for(SessionConfig config : GlobalVars.downstreamSessionConfigMap.values()) {
-            Collection<BlockingQueue<MessageFuture>> requestQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>();
-            for(int i = 0; i < config.getRequestQueueSequence(); i++) {
-                requestQueueNodes.add(new LinkedBlockingQueue<MessageFuture>(config.getRequestQueueSize()));
-            }
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(requestQueueNodes);
-            
-            GlobalVars.deliverMsgQueueMap.put(config, requestQueueGroup);
-            
-            Collection<BlockingQueue<MessageFuture>> responseQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>();
-            for(int i = 0; i < config.getResponseQueueSequence(); i++) {
-                responseQueueNodes.add(new LinkedBlockingQueue<MessageFuture>(config.getResponseQueueSize()));
-            }
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(responseQueueNodes);
-            
-            GlobalVars.deliverMsgQueueMap.put(config, responseQueueGroup);
-            
-            Collection<BlockingQueue<MessageFuture>> messageQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>(); 
-            messageQueueNodes.add(new LinkedBlockingQueue<MessageFuture>());
-            
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(messageQueueNodes);
-            
-            GlobalVars.messageQueueMap.put(config, messageQueueGroup);    
-            
-//            GlobalVars.requestMsgQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>(config.getRequestQueueSize()));
-//            GlobalVars.responseMsgQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>(config.getResponseQueueSize()));
-//            GlobalVars.messageQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>());
+        	
+			GlobalVars.requestMsgQueueMap.put(
+					config,
+					new BdbQueueMap<Long, MessageFuture>(config
+							.getRequestQueuePathHome(), config
+							.getRequestQueueName()));
+			GlobalVars.responseMsgQueueMap.put(
+					config,
+					new BdbQueueMap<Long, MessageFuture>(config
+							.getResponseQueuePathHome(), config
+							.getResponseQueueName()));
         }
         for(SessionConfig config : GlobalVars.duplexSessionConfigMap.values()) {
-            Collection<BlockingQueue<MessageFuture>> deliverQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>();
-            for(int i = 0; i < config.getDeliverQueueSequence(); i++) {
-                deliverQueueNodes.add(new LinkedBlockingQueue<MessageFuture>(config.getDeliverQueueSize()));
-            }
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> deliverQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(deliverQueueNodes);
-            
-            GlobalVars.deliverMsgQueueMap.put(config, deliverQueueGroup);            
-            
-            Collection<BlockingQueue<MessageFuture>> requestQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>();
-            for(int i = 0; i < config.getRequestQueueSequence(); i++) {
-                requestQueueNodes.add(new LinkedBlockingQueue<MessageFuture>(config.getRequestQueueSize()));
-            }
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> requestQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(requestQueueNodes);
-            
-            GlobalVars.deliverMsgQueueMap.put(config, requestQueueGroup);
-            
-            Collection<BlockingQueue<MessageFuture>> responseQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>();
-            for(int i = 0; i < config.getResponseQueueSequence(); i++) {
-                responseQueueNodes.add(new LinkedBlockingQueue<MessageFuture>(config.getResponseQueueSize()));
-            }
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> responseQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(responseQueueNodes);
-            
-            GlobalVars.deliverMsgQueueMap.put(config, responseQueueGroup);
-            
-            Collection<BlockingQueue<MessageFuture>> messageQueueNodes = 
-                    new ArrayList<BlockingQueue<MessageFuture>>(); 
-            messageQueueNodes.add(new LinkedBlockingQueue<MessageFuture>());
-            
-            ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture> messageQueueGroup = 
-                    new ConsistentHashQueueGroup<BlockingQueue<MessageFuture>, MessageFuture>(messageQueueNodes);
-            
-            GlobalVars.messageQueueMap.put(config, messageQueueGroup);               
-            
-//            GlobalVars.deliverMsgQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>(config.getDeliverQueueSize()));
-//            GlobalVars.requestMsgQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>(config.getRequestQueueSize()));
-//            GlobalVars.responseMsgQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>(config.getResponseQueueSize()));
-//            GlobalVars.messageQueueMap.put(config, new LinkedBlockingQueue<MessageFuture>());
+        	
+			GlobalVars.deliverMsgQueueMap.put(
+					config,
+					new BdbQueueMap<Long, MessageFuture>(config
+							.getDeliverQueuePathHome(), config
+							.getDeliverQueueName()));
+			GlobalVars.requestMsgQueueMap.put(
+					config,
+					new BdbQueueMap<Long, MessageFuture>(config
+							.getRequestQueuePathHome(), config
+							.getRequestQueueName()));
+			GlobalVars.responseMsgQueueMap.put(
+					config,
+					new BdbQueueMap<Long, MessageFuture>(config
+							.getResponseQueuePathHome(), config
+							.getResponseQueueName()));	
+			
         }
         return this;
     }

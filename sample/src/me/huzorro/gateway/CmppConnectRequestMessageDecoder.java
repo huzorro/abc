@@ -32,7 +32,7 @@ public class CmppConnectRequestMessageDecoder extends OneToOneDecoder {
     protected Object decode(ChannelHandlerContext ctx, Channel channel,
             Object msg) throws Exception {
         Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
-        long commandId = ((Integer) message.getHeader().getCommandId()).intValue();
+        long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(packetType.getCommandId() != commandId) return msg;
         CmppConnectRequestMessage<ChannelBuffer> requestMessage = 
                 new CmppConnectRequestMessage<ChannelBuffer>();
@@ -40,16 +40,15 @@ public class CmppConnectRequestMessageDecoder extends OneToOneDecoder {
         requestMessage.setHeader(message.getHeader());
         
         ChannelBuffer bodyBuffer = message.getBodyBuffer().copy();
+ 
+		requestMessage.setSourceAddr(bodyBuffer.readBytes(
+				PacketStructure.ConnectRequest.SOURCEADDR.getLength())
+				.toString(GlobalVars.defaultTransportCharset).trim());
         
-        ChannelBuffer sourceAddrBuffer = 
-                bodyBuffer.readBytes(PacketStructure.ConnectRequest.SOURCEADDR.getLength());
-        requestMessage.setSourceAddr(sourceAddrBuffer.toString(GlobalVars.defaultTransportCharset));
-        
-        byte[] authenticatorSourceBytes = 
-                new byte[PacketStructure.ConnectRequest.AUTHENTICATORSOURCE.getLength()];
-        bodyBuffer.readBytes(authenticatorSourceBytes);
-        
-        requestMessage.setAuthenticatorSource(authenticatorSourceBytes);
+       
+		requestMessage.setAuthenticatorSource(bodyBuffer.readBytes(
+				PacketStructure.ConnectRequest.AUTHENTICATORSOURCE.getLength())
+				.array());
         
         requestMessage.setVersion(bodyBuffer.readUnsignedByte());
         requestMessage.setTimestamp(bodyBuffer.readUnsignedInt());
