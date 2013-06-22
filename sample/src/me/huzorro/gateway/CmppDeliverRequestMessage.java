@@ -3,6 +3,8 @@
  */
 package me.huzorro.gateway;
 
+import java.util.Arrays;
+
 import me.huzorro.gateway.cmpp.PacketStructure;
 import me.huzorro.gateway.cmpp.PacketType;
 
@@ -234,6 +236,19 @@ public class CmppDeliverRequestMessage<T extends ChannelBuffer> extends DefaultM
 	 */
 	public void setReport(boolean isReport) {
 		this.isReport = isReport;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return String
+				.format("CmppDeliverRequestMessage [msgId=%s, destId=%s, serviceid=%s, tppid=%s, tpudhi=%s, msgfmt=%s, srcterminalId=%s, srcterminalType=%s, registeredDelivery=%s, msgLength=%s, msgContent=%s, reportRequestMessage=%s, linkid=%s, msgContentBytes=%s, isReport=%s]",
+						msgId, destId, serviceid, tppid, tpudhi, msgfmt,
+						srcterminalId, srcterminalType, registeredDelivery,
+						msgLength, msgContent, reportRequestMessage, linkid,
+						Arrays.toString(msgContentBytes), isReport);
 	}
 	
 		

@@ -11,8 +11,6 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.RequestMessage;
-
 /**
  * @author huzorro
  *

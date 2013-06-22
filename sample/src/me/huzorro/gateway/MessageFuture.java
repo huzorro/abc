@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author huzorro(huzorro@gmail.com)
  */
 public class MessageFuture implements QFuture {
-    private Message<?> message;
+	private static final long serialVersionUID = -8182525781534748369L;
+	private Message<?> message;
     private Queue<QFutureListener> listeners = new ConcurrentLinkedQueue<QFutureListener>();
     private AtomicBoolean done = new AtomicBoolean(false);
     /**

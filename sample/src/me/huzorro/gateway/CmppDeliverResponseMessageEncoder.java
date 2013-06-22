@@ -35,14 +35,15 @@ public class CmppDeliverResponseMessageEncoder extends OneToOneEncoder {
 	protected Object encode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
 		if(!(msg instanceof Message<?>)) return msg;
+
     	Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()) return msg;
-        
-        CmppDeliverResponseMessage<ChannelBuffer> responseMessage = new CmppDeliverResponseMessage<ChannelBuffer>();
+
+        CmppDeliverResponseMessage<ChannelBuffer> responseMessage = (CmppDeliverResponseMessage<ChannelBuffer>) msg;
         
         ChannelBuffer bodyBuffer = ChannelBuffers.dynamicBuffer();	
-        
         bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(responseMessage.getMsgId()));
         bodyBuffer.writeInt((int) responseMessage.getResult());
         

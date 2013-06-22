@@ -7,7 +7,8 @@ import org.jboss.netty.buffer.ChannelBuffer;
  * @author huzorro(huzorro@gmail.com)
  */
 public class DefaultHead<T extends ChannelBuffer> implements Header<T> {
-    private long headLength;
+	private static final long serialVersionUID = -3059342529838994125L;
+	private long headLength;
     private long packetLength;
     private long bodyLength;
     private Object commandId;

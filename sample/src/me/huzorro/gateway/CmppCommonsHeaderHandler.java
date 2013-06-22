@@ -36,7 +36,8 @@ public class CmppCommonsHeaderHandler extends OneToOneEncoder {
         Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
         header.setCommandId(message.getPacketType().getCommandId());
         header.setHeadLength(Head.COMMANDID.getHeadLength());
-        header.setBodyLength(message.getPacketType().getPacketStructures()[0].getBodyLength());
+		header.setBodyLength(message.getPacketType().getPacketStructures().length > 0 ? message
+				.getPacketType().getPacketStructures()[0].getBodyLength() : 0);
         header.setPacketLength(header.getHeadLength() + header.getBodyLength());
 		header.setSequenceId(message.getRequest() != null ? message
 				.getRequest().getHeader().getSequenceId()

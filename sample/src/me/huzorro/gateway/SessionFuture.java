@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author huzorro(huzorro@gmail.com)
  */
 public class SessionFuture implements QFuture {
-    private Session session;
+	private static final long serialVersionUID = 565093414478321808L;
+	private Session session;
     private Queue<QFutureListener> listeners = new ConcurrentLinkedQueue<QFutureListener>();
     private AtomicBoolean done = new AtomicBoolean(false);
     /**
@@ -61,8 +62,8 @@ public class SessionFuture implements QFuture {
         listeners.remove(listenner);
     }
     static class SessionCloseFuture extends SessionFuture {
-
-        /**
+		private static final long serialVersionUID = -2449672555157804491L;
+		/**
          * @param session
          */
         public SessionCloseFuture(Session session) {
@@ -76,8 +77,8 @@ public class SessionFuture implements QFuture {
         }
     }
     static class SessionLoginFuture extends SessionFuture {
-
-        /**
+		private static final long serialVersionUID = -5648554101493670419L;
+		/**
          * @param session
          */
         public SessionLoginFuture(Session session) {

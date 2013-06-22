@@ -14,7 +14,7 @@
               <lifeTime>259200</lifeTime>
               <maxRetry>3</maxRetry>
               <retryWaitTime>60</retryWaitTime>
-              <maxSessions>1</maxSessions>
+              <maxSessions>10</maxSessions>
               <windows>16</windows>
               <generalThreadNum>0</generalThreadNum>
               <scheduleThreadNum>0</scheduleThreadNum>

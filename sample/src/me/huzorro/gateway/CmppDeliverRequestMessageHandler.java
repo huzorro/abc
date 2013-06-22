@@ -42,13 +42,17 @@ public class CmppDeliverRequestMessageHandler extends
         }		
         
         CmppDeliverRequestMessage<ChannelBuffer> requestMessage = (CmppDeliverRequestMessage<ChannelBuffer>) message;
-		CmppSubmitResponseMessage<ChannelBuffer> responseMessage = new CmppSubmitResponseMessage<ChannelBuffer>();
+		CmppDeliverResponseMessage<ChannelBuffer> responseMessage = new CmppDeliverResponseMessage<ChannelBuffer>();
 		
 		responseMessage.setRequest(requestMessage);
 		responseMessage.setMsgId(requestMessage.getMsgId());
 		responseMessage.setResult(0L);
 		
 		ctx.getChannel().write(responseMessage);
+		
+		
+		requestMessage.setBodyBuffer(null);
+		requestMessage.getHeader().setHeadBuffer(null);
 		
 		((Session) ctx.getChannel().getAttachment()).writeDeliver(requestMessage);
 		super.messageReceived(ctx, e);

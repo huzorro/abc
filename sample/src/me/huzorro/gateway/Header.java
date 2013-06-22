@@ -1,10 +1,12 @@
 package me.huzorro.gateway;
 
+import java.io.Serializable;
+
 /**
  *
  * @author huzorro(huzorro@gmail.com)
  */
-public interface Header<T> {
+public interface Header<T> extends Serializable {
     public void setHeadLength(long length);
     public long getHeadLength();
     public void setPacketLength(long length);
