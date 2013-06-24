@@ -1,19 +1,22 @@
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.Head;
+import me.huzorro.gateway.cmpp.CmppHead;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.handler.codec.frame.FrameDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  *
  * @author huzorro(huzorro@gmail.com)
  */
 public class CmppHeaderDecoder extends FrameDecoder {
-
+	private final Logger logger = LoggerFactory.getLogger(CmppHeaderDecoder.class);
     public CmppHeaderDecoder() {
         this(true);
     }
@@ -31,19 +34,19 @@ public class CmppHeaderDecoder extends FrameDecoder {
     @Override
     protected Object decode(ChannelHandlerContext ctx, Channel channel,
             ChannelBuffer buffer) throws Exception {
-        if(buffer.readableBytes() < Head.COMMANDID.getHeadLength()) return null;
+        if(buffer.readableBytes() < CmppHead.COMMANDID.getHeadLength()) return null;
         buffer.markReaderIndex();
         ChannelBuffer headBuffer = 
-                buffer.readBytes(Head.COMMANDID.getHeadLength());
-        Header<ChannelBuffer> header = new DefaultHead<ChannelBuffer>();
-        header.setHeadBuffer(headBuffer.copy());
+                buffer.readBytes(CmppHead.COMMANDID.getHeadLength());
+        Header header = new DefaultHead();
+        header.setHeadBuffer(headBuffer.copy().array());
         
         header.setPacketLength(headBuffer.readUnsignedInt());
         header.setCommandId(Long.valueOf(Integer.toString(headBuffer.readInt())));
         header.setSequenceId(headBuffer.readUnsignedInt());
         
         
-        header.setHeadLength(Head.COMMANDID.getHeadLength());
+        header.setHeadLength(CmppHead.COMMANDID.getHeadLength());
         
         
         header.setBodyLength(header.getPacketLength() - header.getHeadLength());
@@ -55,11 +58,9 @@ public class CmppHeaderDecoder extends FrameDecoder {
         
         ChannelBuffer bodyBuffer = 
                 buffer.readBytes((int) header.getBodyLength());
-        Message<ChannelBuffer> message = new DefaultMessage<ChannelBuffer>();
-        message.setBodyBuffer(bodyBuffer);
+        Message message = new DefaultMessage();
+        message.setBodyBuffer(bodyBuffer.copy().array());
         message.setHeader(header);
-		message.setConfig(((Session) ctx.getChannel().getAttachment())
-				.getConfig());
         return message;
     }
 
@@ -69,9 +70,12 @@ public class CmppHeaderDecoder extends FrameDecoder {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
 			throws Exception {
-		e.getCause().printStackTrace();
-		ctx.getChannel().close();
-		return;
+		logger.error("receive/decode/close exception {}", e, e.getCause());
+		try {
+			e.getChannel().close();
+		} catch (Exception e1) {
+			logger.error("channel close fails {}", e1);
+		}
 	}
    
 

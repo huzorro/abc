@@ -1,10 +1,10 @@
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppConnectRequest;
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.apache.commons.codec.binary.Hex;
-import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
  * 
@@ -12,18 +12,18 @@ import org.jboss.netty.buffer.ChannelBuffer;
  * @author huzorro(huzorro@gmail.com)
  * @param T extends ChannelBuffer
  */
-public class CmppConnectRequestMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppConnectRequestMessage extends DefaultMessage {
     private static final long serialVersionUID = -4852540410843278872L;
 	private String sourceAddr = new String(
-			new byte[PacketStructure.ConnectRequest.SOURCEADDR.getLength()],
+			new byte[CmppConnectRequest.SOURCEADDR.getLength()],
 			GlobalVars.defaultTransportCharset);
-	private byte[] authenticatorSource = new byte[PacketStructure.ConnectRequest.AUTHENTICATORSOURCE
+	private byte[] authenticatorSource = new byte[CmppConnectRequest.AUTHENTICATORSOURCE
 			.getLength()];
     private short version = 0x30;
     private long timestamp = 0L;
     
     public CmppConnectRequestMessage() {
-    	this(PacketType.CMPPCONNECTREQUEST);
+    	this(CmppPacketType.CMPPCONNECTREQUEST);
     }
     public CmppConnectRequestMessage(PacketType packetType) {    	
     	setPacketType(packetType);

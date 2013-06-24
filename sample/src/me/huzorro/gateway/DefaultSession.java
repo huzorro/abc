@@ -7,9 +7,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
-import me.huzorro.gateway.SessionFuture.SessionCloseFuture;
-import me.huzorro.gateway.SessionFuture.SessionLoginFuture;
-
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -24,26 +21,35 @@ public  class DefaultSession implements Session {
     private final Logger logger = LoggerFactory.getLogger(DefaultSession.class);
     private Channel channel;
     private Object attachment;
-    private ConcurrentMap<Object, MessageFuture> requestMap = new ConcurrentHashMap<Object, MessageFuture>();
-    private BdbQueueMap<Long, MessageFuture> responseQueue;
-    private BdbQueueMap<Long, MessageFuture> requestQueue;
-    private BdbQueueMap<Long, MessageFuture> deliverQueue;
+    private ConcurrentMap<Object, QFuture<Message>> requestMap = new ConcurrentHashMap<Object, QFuture<Message>>();
+    private BdbQueueMap<Long, QFuture<Message>> responseQueue;
+    private BdbQueueMap<Long, QFuture<Message>> receiveQueue;
+    private BdbQueueMap<Long, QFuture<Message>> deliverQueue;
     private ConcurrentMap<Object, Future<?>> scheduledTaskMap = new ConcurrentHashMap<Object, Future<?>>();
     private ScheduledExecutorService scheduledExecutor;
     private SessionConfig config;
     private Semaphore windows;
-    private SessionCloseFuture closeFuture = new SessionCloseFuture(this);
-    private SessionLoginFuture loginFuture = new SessionLoginFuture(this);
+    private QFuture<Session> closeFuture = new DefaultFuture<Session>(this);
+    private QFuture<Session> loginFuture = new DefaultFuture<Session>(this);
+    /**
+     * 
+     * @param channel
+     * @param deliverQueue
+     * @param responseQueue
+     * @param receiveQueue
+     * @param scheduleExecutor
+     * @param config
+     */
     public DefaultSession(Channel channel,
-    		BdbQueueMap<Long, MessageFuture> requestQueue,
-    		BdbQueueMap<Long, MessageFuture> responseQueue,
-    		BdbQueueMap<Long, MessageFuture> deliverQueue,
+    		BdbQueueMap<Long, QFuture<Message>> deliverQueue,
+    		BdbQueueMap<Long, QFuture<Message>> responseQueue,
+    		BdbQueueMap<Long, QFuture<Message>> receiveQueue,
             ScheduledExecutorService scheduleExecutor,
             SessionConfig config) {
         setChannel(channel);
         setConfig(config);
         this.responseQueue = responseQueue;
-        this.requestQueue = requestQueue;
+        this.receiveQueue = receiveQueue;
         this.deliverQueue = deliverQueue;
         this.scheduledExecutor = scheduleExecutor;        
         windows = new Semaphore(this.config.getWindows());
@@ -64,12 +70,13 @@ public  class DefaultSession implements Session {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
                 if(future.isSuccess()) {
-                    closeFuture.setClose();
+                    closeFuture.setSuccess();
+                    logger.info("receive channelCloseFuture to channel close {}", future.getChannel());
+                    for(QFuture<Message> futureOfMessage : requestMap.values()) {
+                        deliverQueue.put(futureOfMessage);
+                    }
                     for(Future<?> futureOfTask : scheduledTaskMap.values()) {
                         futureOfTask.cancel(true);
-                    }
-                    for(MessageFuture futureOfMessage : requestMap.values()) {
-                        requestQueue.put(futureOfMessage);
                     }
                 }
             }
@@ -77,128 +84,109 @@ public  class DefaultSession implements Session {
         this.channel.setAttachment(this);
     }
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#writeRequest(me.huzorro.gateway.Message)
-     */
-    @Override
-    public void writeRequest(MessageFuture messageFuture) throws InterruptedException {
+	@Override
+    public void deliver(QFuture<Message> messageFuture) throws InterruptedException {
         windows.acquire();
-        messageFuture.getMessage().incrementAndGetRequests();
-        requestMap.put(messageFuture.getMessage().getHeader().getSequenceId(), messageFuture);
-        channel.write(messageFuture.getMessage());
-    }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#writeResponse(me.huzorro.gateway.Message)
-     */
-    @Override
-    public void writeResponse(Message<?> message) throws InterruptedException {
-        MessageFuture requestFuture = requestMap.remove(message.getHeader().getSequenceId());
-        MessageFuture responseFuture = new MessageFuture(requestFuture.getMessage().setResponse(message));
-        responseQueue.put(responseFuture);        
-        requestFuture.setSuccess();
-        windows.release();
-    }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#setAttachment(java.lang.Object)
-     */
-    @Override
-    public void setAttachment(Object attachment) {
-        this.attachment = attachment;
-    }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#getAttachment()
-     */
-    @Override
-    public Object getAttachment() {
-        return attachment;
-    }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#writeRequestAndScheduleTask(me.huzorro.gateway.Message)
-     */
-    @Override
-    public void writeRequestAndScheduleTask(final MessageFuture messageFuture) throws InterruptedException {
-        if(messageFuture.getMessage().getRequests() > config.getMaxRetry()) {
-            logger.info("The request to send a message number has reached the maximum limit {}", messageFuture.getMessage().getRequests());
+        messageFuture.getMaster().incrementAndGetRequests(config.getMaxRetry());       
+        if(messageFuture.getMaster().getRequests() 
+        		> config.getMaxRetry()) {
+            logger.info("The request to send a message number has reached the maximum limit {}", messageFuture.getMaster().getRequests());
             logger.info("session closing");
             close();
             return;
         }
-        writeRequest(messageFuture);
-        Future<?> future = scheduledExecutor.schedule(new Runnable() {
-            
+        if(messageFuture.getMaster().getHeader() == null) setSequenceId(messageFuture);
+        requestMap.put(messageFuture.getMaster().getHeader().getSequenceId(), messageFuture);
+        channel.write(messageFuture.getMaster());
+    }
+    @Override
+    public void response(Message message) throws InterruptedException {
+        QFuture<Message> requestFuture = requestMap.remove(message.getHeader().getSequenceId());
+        QFuture<Message> responseFuture = new DefaultFuture<Message>(requestFuture.getMaster().setResponse(message));
+        responseQueue.put(responseFuture); 
+        requestFuture.setSuccess();
+        windows.release();
+    }
+    @Override
+    public void setAttachment(Object attachment) {
+        this.attachment = attachment;
+    }
+     @Override
+    public Object getAttachment() {
+        return attachment;
+    }
+    
+    protected void setSequenceId(QFuture<Message> messageFuture) {
+    	Header header = new DefaultHead();
+		header.setSequenceId((GlobalVars.sequenceId.compareAndSet(
+								Integer.MAX_VALUE, 0) ? GlobalVars.sequenceId
+								.getAndIncrement() : GlobalVars.sequenceId
+								.getAndIncrement()));
+		messageFuture.getMaster().setHeader(header);    	
+    }
+     @Override
+    public void deliverAndScheduleTask(final QFuture<Message> messageFuture) throws InterruptedException {
+        windows.acquire();
+        messageFuture.getMaster().incrementAndGetRequests(config.getMaxRetry());
+        setSequenceId(messageFuture); 
+        Future<?> future = scheduledExecutor.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
                 try {
-                    writeRequestAndScheduleTask(messageFuture);
-                } catch (InterruptedException e) {
-                    logger.error("windows acquire interrupted: {}", e);
+                	deliver(messageFuture);
+                } catch (Exception e) {
+                    logger.error("windows acquire interrupted: ", e.getCause());
                     try {
                         close();
                     } catch (InterruptedException e1) {
-                        logger.error("session close interrupted: {}", e1);
+                        logger.error("session close interrupted: ", e1.getCause());
                     }
                 }
             }
-        } , config.getRetryWaitTime(), TimeUnit.SECONDS);
-        scheduledTaskMap.put(messageFuture.getMessage().getHeader().getSequenceId(), future);
-        logger.debug("The request to send a message number is {}", messageFuture.getMessage().getRequests());
+        } , config.getRetryWaitTime(), config.getRetryWaitTime(), TimeUnit.SECONDS);
+        
+        scheduledTaskMap.put(messageFuture.getMaster().getHeader().getSequenceId(), future);
+        requestMap.put(messageFuture.getMaster().getHeader().getSequenceId(), messageFuture);
+        channel.write(messageFuture.getMaster());
+        logger.debug("The request to send a message number is {}", messageFuture.getMaster().getRequests());
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#writeResponseAndScheduleTask(me.huzorro.gateway.Message)
-     */
-    @Override
-    public void writeResponseAndScheduleTask(Message<?> message) throws InterruptedException {
-        writeResponse(message);
+     @Override
+    public void responseAndScheduleTask(Message message) throws InterruptedException {
+        logger.info("{}", message);
         scheduledTaskMap.remove(message.getHeader().getSequenceId()).cancel(true);
+        QFuture<Message> requestFuture = requestMap.remove(message.getHeader().getSequenceId());
+        QFuture<Message> responseFuture = new DefaultFuture<Message>(requestFuture.getMaster().setResponse(message));
+        responseQueue.put(responseFuture); 
+        requestFuture.setSuccess();
+        windows.release();
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#writeDeliver(me.huzorro.gateway.MessageFuture)
-     */
     @Override
-    public void writeDeliver(Message<?> message) throws Exception {
-        MessageFuture messageFuture = new MessageFuture(message);
-        deliverQueue.put(messageFuture);
+    public void receive(Message message) throws Exception {
+        QFuture<Message> messageFuture = new DefaultFuture<Message>(message);
+        receiveQueue.put(messageFuture);
     }    
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#close()
-     */
     @Override
     public void close() throws InterruptedException {
         channel.close();
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#getConfig()
-     */
     @Override
     public SessionConfig getConfig() {
         return config;
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#setConfig(me.huzorro.gateway.SessionConfig)
-     */
     @Override
     public void setConfig(SessionConfig config) {
         this.config = config;
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#isClosed()
-     */
     @Override
     public boolean isClosed() {
-        return closeFuture.isClosed();
+        return closeFuture.isSuccess();
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#getCloseFuture()
-     */
-    @Override
-    public SessionCloseFuture getCloseFuture() {
+     @Override
+    public QFuture<Session> getCloseFuture() {
         return closeFuture;
     }
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Session#getLoginFuture()
-     */
-    @Override
-    public SessionLoginFuture getLoginFuture() {
+     @Override
+    public QFuture<Session> getLoginFuture() {
         return loginFuture;
     }
 	@Override
@@ -206,5 +194,4 @@ public  class DefaultSession implements Session {
 		return requestMap.size() >= config.getWindows();
 	}
     
-
 }

@@ -9,24 +9,23 @@ import org.jboss.netty.channel.Channel;
  * @author huzorro(huzorro@gmail.com)
  */
 public class CmppSession extends DefaultSession {
-
-    /**
-     * @param channel
-     * @param requestQueue
-     * @param responseQueue
-     * @param deliverQueue
-     * @param messageQueue
-     * @param scheduleExecutor
-     * @param config
-     */
+	
+	/**
+	 * 
+	 * @param channel
+	 * @param receiveQueue
+	 * @param responseQueue
+	 * @param deliverQueue
+	 * @param scheduleExecutor
+	 * @param config
+	 */
     public CmppSession(
             Channel channel,
-            BdbQueueMap<Long, MessageFuture> requestQueue,
-            BdbQueueMap<Long, MessageFuture> responseQueue,
-            BdbQueueMap<Long, MessageFuture> deliverQueue,
+            BdbQueueMap<Long, QFuture<Message>> deliverQueue,
+            BdbQueueMap<Long, QFuture<Message>> responseQueue,
+            BdbQueueMap<Long, QFuture<Message>> receiveQueue,
             ScheduledExecutorService scheduleExecutor, SessionConfig config) {
-        super(channel, requestQueue, responseQueue, deliverQueue,
-                scheduleExecutor, config);
+    	super(channel, deliverQueue, responseQueue, receiveQueue, scheduleExecutor, config);
     }
 
     

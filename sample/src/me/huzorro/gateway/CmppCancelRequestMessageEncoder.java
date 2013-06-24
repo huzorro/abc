@@ -3,6 +3,7 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -12,14 +13,14 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class CmppCancelRequestMessageEncoder extends OneToOneEncoder {
 	private PacketType packetType;
 	
 	public CmppCancelRequestMessageEncoder() {
-		this(PacketType.CMPPCANCELREQUEST);
+		this(CmppPacketType.CMPPCANCELREQUEST);
 	}
 
 	public CmppCancelRequestMessageEncoder(PacketType packetType) {
@@ -29,22 +30,21 @@ public class CmppCancelRequestMessageEncoder extends OneToOneEncoder {
 	 * @see org.jboss.netty.handler.codec.oneone.OneToOneEncoder#encode(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected Object encode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
-	    if(!(msg instanceof Message<?>)) return msg;
-    	Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+	    if(!(msg instanceof Message)) return msg;
+    	Message message = (Message) msg;
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()) return msg;
         
-        CmppCancelRequestMessage<ChannelBuffer> requestMessage = (CmppCancelRequestMessage<ChannelBuffer>) message;
+        CmppCancelRequestMessage requestMessage = (CmppCancelRequestMessage) message;
 
         ChannelBuffer bodyBuffer = ChannelBuffers.dynamicBuffer();
         
         bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(requestMessage.getMsgId()));
         
         
-        message.setBodyBuffer(bodyBuffer);
+        message.setBodyBuffer(bodyBuffer.copy().array());
         
         ChannelBuffer messageBuffer = ChannelBuffers.dynamicBuffer();
         messageBuffer.writeBytes(message.getHeader().getHeadBuffer());

@@ -20,15 +20,14 @@ public class NettyTcpClient<T extends ChannelFuture> implements TcpClient<T> {
     }
     /**
      * 
+     * @param bootstrap
+     * @param serverAddress
      */
     public NettyTcpClient(ClientBootstrap bootstrap, InetSocketAddress serverAddress) {
         this.bootstrap = bootstrap;
         this.serverAddress = serverAddress;
     }
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.TcpClient#connect()
-     */
     @SuppressWarnings("unchecked")
     @Override
     public T connect() {

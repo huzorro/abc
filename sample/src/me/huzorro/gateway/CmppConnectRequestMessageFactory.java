@@ -2,7 +2,6 @@ package me.huzorro.gateway;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
-import org.jboss.netty.buffer.ChannelBuffer;
 
 import com.google.common.primitives.Bytes;
 
@@ -12,8 +11,8 @@ import com.google.common.primitives.Bytes;
  * @param <T>
  */
 public class CmppConnectRequestMessageFactory<T> implements Factory<T> {
-    private CmppUpstreamSessionConfig config;
-    public CmppConnectRequestMessageFactory(CmppUpstreamSessionConfig config) {
+    private SessionConfig config;
+    public CmppConnectRequestMessageFactory(SessionConfig config) {
         this.config = config;
     }
 
@@ -24,7 +23,7 @@ public class CmppConnectRequestMessageFactory<T> implements Factory<T> {
     @SuppressWarnings("unchecked")
     public T create() throws Exception {
         
-        CmppConnectRequestMessage<ChannelBuffer> message = new CmppConnectRequestMessage<ChannelBuffer>();
+        CmppConnectRequestMessage message = new CmppConnectRequestMessage();
         message.setSourceAddr(config.getUser());
         message.setVersion(config.getVersion());
         String timestamp = DateFormatUtils.format(System.currentTimeMillis(), "MMddHHmmss");

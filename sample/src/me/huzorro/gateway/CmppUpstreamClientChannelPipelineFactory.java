@@ -64,6 +64,7 @@ public class CmppUpstreamClientChannelPipelineFactory implements
         pipeline.addLast("CmppHeaderEncoder", new CmppHeaderEncoder());          
 //        pipeline.addLast("CmppSubmitRequestMessageHeaderHandler", new CmppSubmitRequestMessageHeaderHandler());
         pipeline.addLast("CmppCommonsHeaderHandler", new CmppCommonsHeaderHandler());
+        pipeline.addLast("CmppCommonsMessageHandler", new CmppCommonsMessageHandler());
         
 //        pipeline.addLast("CmppSubmitResponseMessageHandler", new CmppSubmitResponseMessageHandler());
         pipeline.addLast("CmppDeliverRequestMessageHandler", new CmppDeliverRequestMessageHandler());

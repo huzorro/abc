@@ -1,33 +1,49 @@
 package me.huzorro.gateway;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.CombinedConfiguration;
 
 /**
- *
+ * 
  * @author huzorro(huzorro@gmail.com)
+ *
  * @param <T>
+ * @param <E>
  */
-public class UpstreamSessionConfigMapFactory<T extends Map<String, SessionConfig>, E extends UpstreamSessionConfig> extends
+public class UpstreamSessionConfigMapFactory<T extends Map<String, Map<String, E>>, E extends SessionConfig> extends
         SessionConfigMapFactory<T, E> {
+	/**
+	 * 
+	 * @param configuration
+	 * @param sessionConfigMap
+	 * @param configList
+	 */
     @SuppressWarnings("unchecked")
     public UpstreamSessionConfigMapFactory(
             CombinedConfiguration configuration,
-            Map<String, SessionConfig> sessionConfigMap) {
-        this(configuration, sessionConfigMap, "upstream", (Class<E>) UpstreamSessionConfig.class);
+            T sessionConfigMap,
+            List<String> configList) {
+        this(configuration, sessionConfigMap, "upstream", "session", (Class<E>) UpstreamSessionConfig.class, configList);
     }
     /**
-     * @param configurationBuilder
+     * 
+     * @param configuration
      * @param sessionConfigMap
      * @param sessionType
+     * @param configName
      * @param classz
+     * @param configList
      */
     public UpstreamSessionConfigMapFactory(
             CombinedConfiguration configuration,
-            Map<String, SessionConfig> sessionConfigMap, String sessionType,
-            Class<E> classz) {
-        super(configuration, sessionConfigMap, sessionType, classz);
+            T sessionConfigMap, 
+            String sessionType,
+            String configName,
+            Class<E> classz,
+            List<String> configList) {
+        super(configuration, sessionConfigMap, sessionType, configName, classz, configList);
     }
 
 }

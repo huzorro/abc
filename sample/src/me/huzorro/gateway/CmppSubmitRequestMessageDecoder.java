@@ -3,16 +3,18 @@
  */
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppPacketType;
+import me.huzorro.gateway.cmpp.CmppSubmitRequest;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class CmppSubmitRequestMessageDecoder extends OneToOneDecoder {
@@ -21,7 +23,7 @@ public class CmppSubmitRequestMessageDecoder extends OneToOneDecoder {
 	 * 
 	 */
 	public CmppSubmitRequestMessageDecoder() {
-		this(PacketType.CMPPSUBMITREQUEST);
+		this(CmppPacketType.CMPPSUBMITREQUEST);
 	}
 	public CmppSubmitRequestMessageDecoder(PacketType packetType) {
 		this.packetType = packetType;
@@ -31,33 +33,32 @@ public class CmppSubmitRequestMessageDecoder extends OneToOneDecoder {
 	 * @see org.jboss.netty.handler.codec.oneone.OneToOneDecoder#decode(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected Object decode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
-        Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+        Message message = (Message) msg;
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(packetType.getCommandId() != commandId) return msg;	
         
-        CmppSubmitRequestMessage<ChannelBuffer> requestMessage = new CmppSubmitRequestMessage<ChannelBuffer>();
+        CmppSubmitRequestMessage requestMessage = new CmppSubmitRequestMessage();
         requestMessage.setBodyBuffer(message.getBodyBuffer());
         requestMessage.setHeader(message.getHeader());
         
-        ChannelBuffer bodyBuffer = message.getBodyBuffer().copy();
+        ChannelBuffer bodyBuffer = ChannelBuffers.copiedBuffer(message.getBodyBuffer());
                        
 		requestMessage.setMsgid(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer
-				.readBytes(PacketStructure.SubmitRequest.MSGID.getLength())
+				.readBytes(CmppSubmitRequest.MSGID.getLength())
 				.array()));
         requestMessage.setPktotal(bodyBuffer.readUnsignedByte());
         requestMessage.setPktotal(bodyBuffer.readUnsignedByte());
         requestMessage.setRegisteredDelivery(bodyBuffer.readUnsignedByte());
         requestMessage.setMsglevel(bodyBuffer.readUnsignedByte());
 		requestMessage.setServiceId(bodyBuffer.readBytes(
-				PacketStructure.SubmitRequest.SERVICEID.getLength()).toString(
+				CmppSubmitRequest.SERVICEID.getLength()).toString(
 				GlobalVars.defaultTransportCharset).trim());
 		requestMessage.setFeeUserType(bodyBuffer.readUnsignedByte());
 		
 		requestMessage.setFeeterminalId(bodyBuffer
-						.readBytes(PacketStructure.SubmitRequest.FEETERMINALID.getLength())
+						.readBytes(CmppSubmitRequest.FEETERMINALID.getLength())
 						.toString(GlobalVars.defaultTransportCharset).trim());		
 		
 		requestMessage.setFeeterminaltype(bodyBuffer.readUnsignedByte());
@@ -65,33 +66,33 @@ public class CmppSubmitRequestMessageDecoder extends OneToOneDecoder {
 		requestMessage.setTpudhi(bodyBuffer.readUnsignedByte());
 		requestMessage.setMsgFmt(bodyBuffer.readUnsignedByte());
 		requestMessage.setMsgsrc(bodyBuffer
-				.readBytes(PacketStructure.SubmitRequest.MSGSRC.getLength())
+				.readBytes(CmppSubmitRequest.MSGSRC.getLength())
 				.toString(GlobalVars.defaultTransportCharset).trim());
 		
 		requestMessage.setFeeType(bodyBuffer.readBytes(
-				PacketStructure.SubmitRequest.FEETYPE.getLength()).toString(
+				CmppSubmitRequest.FEETYPE.getLength()).toString(
 				GlobalVars.defaultTransportCharset).trim());
 		
 		requestMessage.setFeeCode(bodyBuffer.readBytes(
-				PacketStructure.SubmitRequest.FEECODE.getLength()).toString(
+				CmppSubmitRequest.FEECODE.getLength()).toString(
 				GlobalVars.defaultTransportCharset).trim());
 		
 		requestMessage.setValIdTime(bodyBuffer.readBytes(
-				PacketStructure.SubmitRequest.VALIDTIME.getLength()).toString(
+				CmppSubmitRequest.VALIDTIME.getLength()).toString(
 				GlobalVars.defaultTransportCharset).trim());
 		
 		requestMessage.setAtTime(bodyBuffer
-				.readBytes(PacketStructure.SubmitRequest.ATTIME.getLength())
+				.readBytes(CmppSubmitRequest.ATTIME.getLength())
 				.toString(GlobalVars.defaultTransportCharset).trim());
 		
 		requestMessage.setSrcId(bodyBuffer
-				.readBytes(PacketStructure.SubmitRequest.SRCID.getLength())
+				.readBytes(CmppSubmitRequest.SRCID.getLength())
 				.toString(GlobalVars.defaultTransportCharset).trim());
 		
 		requestMessage.setDestUsrtl(bodyBuffer.readUnsignedByte());
 		
 		requestMessage.setDestterminalId(bodyBuffer
-				.readBytes(PacketStructure.SubmitRequest.DESTTERMINALID.getLength())
+				.readBytes(CmppSubmitRequest.DESTTERMINALID.getLength())
 				.toString(GlobalVars.defaultTransportCharset).trim());
 		
 		requestMessage.setDestterminaltype(bodyBuffer.readUnsignedByte());
@@ -102,7 +103,7 @@ public class CmppSubmitRequestMessageDecoder extends OneToOneDecoder {
 				.toString(GlobalVars.defaultTransportCharset).trim());
 		
 		requestMessage.setLinkID(bodyBuffer
-				.readBytes(PacketStructure.SubmitRequest.LINKID.getLength())
+				.readBytes(CmppSubmitRequest.LINKID.getLength())
 				.toString(GlobalVars.defaultTransportCharset).trim());
 		
 		return requestMessage;

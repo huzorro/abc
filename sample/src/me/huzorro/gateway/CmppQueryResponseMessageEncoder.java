@@ -3,7 +3,8 @@
  */
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppPacketType;
+import me.huzorro.gateway.cmpp.CmppQueryResponse;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -15,14 +16,14 @@ import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import com.google.common.primitives.Bytes;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class CmppQueryResponseMessageEncoder extends OneToOneEncoder {
 	private PacketType packetType;
 	
 	public CmppQueryResponseMessageEncoder() {
-		this(PacketType.CMPPQUERYRESPONSE);
+		this(CmppPacketType.CMPPQUERYRESPONSE);
 	}
 
 	public CmppQueryResponseMessageEncoder(PacketType packetType) {
@@ -32,22 +33,21 @@ public class CmppQueryResponseMessageEncoder extends OneToOneEncoder {
 	 * @see org.jboss.netty.handler.codec.oneone.OneToOneEncoder#encode(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected Object encode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
-	    if(!(msg instanceof Message<?>)) return msg;
-		Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+	    if(!(msg instanceof Message)) return msg;
+		Message message = (Message) msg;
 		long commandId = ((Long) message.getHeader().getCommandId())
 				.longValue();
 		if (commandId != packetType.getCommandId())
 			return msg;
-		CmppQueryResponseMessage<ChannelBuffer> responseMessage = (CmppQueryResponseMessage<ChannelBuffer>) message;
+		CmppQueryResponseMessage responseMessage = (CmppQueryResponseMessage) message;
 
 		ChannelBuffer bodyBuffer = ChannelBuffers.dynamicBuffer();
 		
 		bodyBuffer.writeBytes(Bytes.ensureCapacity(responseMessage.getTime()
 				.getBytes(GlobalVars.defaultTransportCharset),
-				PacketStructure.QueryResponse.TIME.getLength(), 0));
+				CmppQueryResponse.TIME.getLength(), 0));
 		
 		bodyBuffer.writeByte(responseMessage.getQueryType());
 		bodyBuffer.writeInt((int) responseMessage.getMtTLMsg());
@@ -59,7 +59,7 @@ public class CmppQueryResponseMessageEncoder extends OneToOneEncoder {
 		bodyBuffer.writeInt((int) responseMessage.getMoWT());
 		bodyBuffer.writeInt((int) responseMessage.getMoFL());
 		
-        message.setBodyBuffer(bodyBuffer);
+        message.setBodyBuffer(bodyBuffer.copy().array());
         
         ChannelBuffer messageBuffer = ChannelBuffers.dynamicBuffer();
         

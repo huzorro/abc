@@ -3,21 +3,20 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
-public class CmppCancelRequestMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppCancelRequestMessage extends DefaultMessage {
 	private static final long serialVersionUID = -4633530203133110407L;
 	private MsgId msgId = new MsgId();
 	
 	public CmppCancelRequestMessage() {
-		this(PacketType.CMPPCANCELREQUEST);
+		this(CmppPacketType.CMPPCANCELREQUEST);
 	}
 	
 	public CmppCancelRequestMessage(PacketType packetType) {

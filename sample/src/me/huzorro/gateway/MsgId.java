@@ -7,7 +7,8 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * @author huzorro
+ * 
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class MsgId implements Serializable {
@@ -35,6 +36,15 @@ public class MsgId implements Serializable {
 		this(timeMillis, 1010, (int) (atomicLong.compareAndSet(Short.MAX_VALUE, 0)
 				? atomicLong.getAndIncrement()
 				: atomicLong.getAndIncrement()));
+	}
+	public MsgId(String msgIds) {
+		setMonth(Integer.parseInt(msgIds.substring(0, 2)));
+		setDay(Integer.parseInt(msgIds.substring(2, 4)));
+		setHour(Integer.parseInt(msgIds.substring(4, 6)));
+		setMinutes(Integer.parseInt(msgIds.substring(6, 8)));
+		setSeconds(Integer.parseInt(msgIds.substring(8, 10)));
+		setGateId(Integer.parseInt(msgIds.substring(10, 17)));
+		setSequenceId(Integer.parseInt(msgIds.substring(17, 22)));
 	}
 	public MsgId(long timeMillis, int gateId, int sequenceId) {
 		setMonth(Integer.parseInt(String.format("%tm", timeMillis)));

@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
@@ -23,17 +23,19 @@ public class DefaultServerSessionConfigFactory<T> implements Factory<T> {
 	private String user;
 	private short version;
 	private String host;
-
+	private SessionConfig defaultSessionConfig;
 	/**
 	 * 
+	 * @param defaultSessionConfig
 	 */
-	public DefaultServerSessionConfigFactory() {
+	public DefaultServerSessionConfigFactory(SessionConfig defaultSessionConfig) {
+		this.defaultSessionConfig = defaultSessionConfig;
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
-			logger.error("sqlite jdbc load failed {}", e);
+			logger.error("sqlite jdbc load failed", e.getCause());
 			Runtime.getRuntime().exit(-1);
-		}
+		}		
 	}
 	public  DefaultServerSessionConfigFactory<T> setUser(String user) {
 		this.user = user;
@@ -48,6 +50,9 @@ public class DefaultServerSessionConfigFactory<T> implements Factory<T> {
 		this.host = host;
 		return this;
 	}
+	public SessionConfig getDefaultSessionConfig() {
+		return defaultSessionConfig;
+	}
 	@Override
 	@SuppressWarnings("unchecked")
 	public T create() throws SQLException {
@@ -55,7 +60,7 @@ public class DefaultServerSessionConfigFactory<T> implements Factory<T> {
 		Connection connection = DriverManager.getConnection("jdbc:sqlite:" + url.getFile());
     	try {
 			PreparedStatement pstmt = connection.prepareStatement(
-					"SELECT channelids, user, passwd, version, maxretry, retrytime, maxsessions, " +
+					"SELECT channelids, clienthost, port, user, passwd, version, maxretry, retrytime, maxsessions, " +
 					"windows FROM session_config_tbl WHERE user = ? AND clienthost = ? AND version = ? AND status = ?");
 			pstmt.setString(1, user);
 			pstmt.setString(2, host);
@@ -64,7 +69,11 @@ public class DefaultServerSessionConfigFactory<T> implements Factory<T> {
 			ResultSet rs = pstmt.executeQuery();
 			if(!rs.next()) return null;
 			SessionConfig config = new DefaultServerSessionConfig();
+			config.setAttPreffix(defaultSessionConfig.getAttPreffix());
+			config.setConfiguration(defaultSessionConfig.getConfiguration());
 			config.setChannelIds(rs.getString("channelids"));
+			config.setHost(rs.getString("clienthost"));
+			config.setPort(rs.getInt("port"));
 			config.setUser(rs.getString("user"));
 			config.setPasswd(rs.getString("passwd"));
 			config.setVersion(rs.getShort("version"));
@@ -75,7 +84,7 @@ public class DefaultServerSessionConfigFactory<T> implements Factory<T> {
 			logger.info(config.toString());
 			return (T) config;
 		} catch(SQLException e){
-			logger.error("{}", e);
+			logger.error("The configuration file failed to obtain certification", e.getCause());
 			throw e;
 		}finally {
 			connection.close();

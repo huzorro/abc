@@ -3,15 +3,15 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class CmppDeliverRequestMessageHandler extends
@@ -21,7 +21,7 @@ public class CmppDeliverRequestMessageHandler extends
 	 * 
 	 */
 	public CmppDeliverRequestMessageHandler() {
-		this(PacketType.CMPPDELIVERREQUEST);
+		this(CmppPacketType.CMPPDELIVERREQUEST);
 	}
 
 	public CmppDeliverRequestMessageHandler(PacketType packetType) {
@@ -31,18 +31,17 @@ public class CmppDeliverRequestMessageHandler extends
 	 * @see org.jboss.netty.channel.SimpleChannelUpstreamHandler#messageReceived(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.MessageEvent)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
-		Message<ChannelBuffer> message = (Message<ChannelBuffer>) e.getMessage();
+		Message message = (Message) e.getMessage();
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()){
             super.messageReceived(ctx, e);
             return;
         }		
         
-        CmppDeliverRequestMessage<ChannelBuffer> requestMessage = (CmppDeliverRequestMessage<ChannelBuffer>) message;
-		CmppDeliverResponseMessage<ChannelBuffer> responseMessage = new CmppDeliverResponseMessage<ChannelBuffer>();
+        CmppDeliverRequestMessage requestMessage = (CmppDeliverRequestMessage) message;
+		CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage();
 		
 		responseMessage.setRequest(requestMessage);
 		responseMessage.setMsgId(requestMessage.getMsgId());
@@ -51,10 +50,8 @@ public class CmppDeliverRequestMessageHandler extends
 		ctx.getChannel().write(responseMessage);
 		
 		
-		requestMessage.setBodyBuffer(null);
-		requestMessage.getHeader().setHeadBuffer(null);
+		((Session) ctx.getChannel().getAttachment()).receive(requestMessage.setResponse(responseMessage));
 		
-		((Session) ctx.getChannel().getAttachment()).writeDeliver(requestMessage);
 		super.messageReceived(ctx, e);
 	}
 

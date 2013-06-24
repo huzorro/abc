@@ -35,6 +35,14 @@ public class NettyTcpClientFactory<T extends NettyTcpClient<ChannelFuture>> impl
                 Executors.newCachedThreadPool(), 
                 Executors.newCachedThreadPool());
     }
+    /**
+     * 
+     * @param serverAddress
+     * @param channelPipelineFactory
+     * @param bootstrap
+     * @param boss
+     * @param work
+     */
     public NettyTcpClientFactory(InetSocketAddress serverAddress, 
             ChannelPipelineFactory channelPipelineFactory,
             ClientBootstrap bootstrap,
@@ -48,9 +56,6 @@ public class NettyTcpClientFactory<T extends NettyTcpClient<ChannelFuture>> impl
         bootstrap.setOption("keepAlive", true);
     }
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Factory#create()
-     */
     @Override
     @SuppressWarnings("unchecked")
     public T create() {

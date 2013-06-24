@@ -3,22 +3,21 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
-public class CmppSubmitResponseMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppSubmitResponseMessage extends DefaultMessage {
 	private static final long serialVersionUID = -6806940736604019528L;
 	private MsgId msgId = new MsgId();
 	private long result = 0;
 	
 	public CmppSubmitResponseMessage() {
-		this(PacketType.CMPPSUBMITRESPONSE);
+		this(CmppPacketType.CMPPSUBMITRESPONSE);
 	}
 	
 	public CmppSubmitResponseMessage(PacketType packetType) {

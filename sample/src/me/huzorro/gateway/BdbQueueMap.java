@@ -261,6 +261,19 @@ public class BdbQueueMap<K, E> extends AbstractQueue<E> implements BlockingQueue
 	}
 	/**
 	 * 清理log
+	 * @see QueueEnvironment#cleanLog()
+	 * @see com.sleepycat.je.Environment#cleanLog()
+	 */
+	public void clearLog() {
+		lock.lock();
+		try {
+			queueEnvironment.clearLog();
+		} finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * 清理log
 	 * <br>关闭{@link Environment}
 	 * <br>关闭{@link Database}
 	 * @see QueueEnvironment#close()
@@ -275,7 +288,13 @@ public class BdbQueueMap<K, E> extends AbstractQueue<E> implements BlockingQueue
 			lock.unlock();
 		}
 	}
-	
+	/**
+	 * 初始化{@code bdb je}环境
+	 * @author huzorro(huzorro@gmail.com)
+	 *
+	 * @param <K>
+	 * @param <E>
+	 */
 	static final class QueueEnvironment<K, E> {
 		private Environment environment;
 		private DatabaseConfig dbConfig;
@@ -315,7 +334,9 @@ public class BdbQueueMap<K, E> extends AbstractQueue<E> implements BlockingQueue
 					(EntryBinding<E>) messageValueBinding, true);
 			return this;
 		}
-		
+		public void clearLog() {
+			environment.cleanLog();
+		}
 		public void close() {
 			environment.cleanLog();
 			classCatalogDB.close();

@@ -1,5 +1,6 @@
 package me.huzorro.gateway;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,34 +14,48 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ * 
  * @author huzorro(huzorro@gmail.com)
+ *
+ * @param <T>
+ * @param <E>
  */
-public class SessionConfigMapFactory<T extends Map<String, SessionConfig>, E extends SessionConfig> implements Factory<T> {
+public class SessionConfigMapFactory<T extends Map<String, Map<String, E>>, E extends SessionConfig> implements Factory<T> {
     private final Logger logger = LoggerFactory.getLogger(SessionConfigMapFactory.class);
     private CombinedConfiguration  config;
-    private Map<String, SessionConfig> sessionConfigMap;
+    private T sessionConfigMap;
     private String sessionType;
+    private String configName;
     private Class<E> sessionConfig;
-
+    private List<String> configList;
+    /**
+     * 
+     * @param config
+     * @param sessionConfigMap
+     * @param sessionType
+     * @param configName
+     * @param sessionConfig
+     * @param configList
+     */
     public SessionConfigMapFactory(
             CombinedConfiguration config,
-            Map<String, SessionConfig> sessionConfigMap,
+            T sessionConfigMap,
             String sessionType,
-            Class<E> sessionConfig) {
+            String configName,
+            Class<E> sessionConfig,
+            List<String> configList) {
         this.config = config;
         this.sessionConfigMap = sessionConfigMap;
         this.sessionType = sessionType;
+        this.configName = configName;
         this.sessionConfig = sessionConfig;
+        this.configList = configList;
     }
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.Factory#create()
-     */
+
     @Override
-    @SuppressWarnings("unchecked")
     public T  create() throws ConfigurationException, InstantiationException, IllegalAccessException{
-        XMLConfiguration xmlConfig = (XMLConfiguration) config.getConfiguration("session");
+        XMLConfiguration xmlConfig = (XMLConfiguration) config.getConfiguration(configName);
         xmlConfig.addConfigurationListener(new ConfigurationListener() {
             @Override
             public void configurationChanged(ConfigurationEvent event) {
@@ -51,13 +66,21 @@ public class SessionConfigMapFactory<T extends Map<String, SessionConfig>, E ext
         });
         HierarchicalConfiguration sub = xmlConfig.configurationAt("sessions");
         List<HierarchicalConfiguration>  subList= sub.configurationsAt("session");
+        Map<String, E> configMap = new HashMap<String, E>();
         for(int i = 0; i < subList.size(); i++) {            
             E config = sessionConfig.newInstance();
             config.setAttPreffix(String.format("sessions.session(%1$d).%2$s", i, sessionType));
             config.setConfiguration(xmlConfig);
             config.setChannelIds(subList.get(i).getString("channelIds"));
-            sessionConfigMap.put(config.getChannelIds(), config);
-            logger.debug("{}", config);
+            if(configList != null && !configList.contains(config.getChannelIds())) continue;
+            configMap.put(config.getChannelIds(), config);
+        }
+        if(configMap.isEmpty()) throw new InstantiationException("Not found channelIds");
+        
+        if(sessionConfigMap.get(configName) != null) {
+        	sessionConfigMap.get(configName).putAll(configMap);
+        } else {
+        	sessionConfigMap.put(configName, configMap);
         }
         return (T) sessionConfigMap;
     }

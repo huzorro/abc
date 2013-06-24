@@ -3,20 +3,19 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
-public class CmppTerminateResponseMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppTerminateResponseMessage extends DefaultMessage {
 	private static final long serialVersionUID = -2657187574508760595L;
 
 	public CmppTerminateResponseMessage() {
-		this(PacketType.CMPPTERMINATERESPONSE);
+		this(CmppPacketType.CMPPTERMINATERESPONSE);
 	}
 	public CmppTerminateResponseMessage(PacketType packetType) {
 		setPacketType(packetType);

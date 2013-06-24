@@ -3,15 +3,15 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class CmppCancelRequestMessageHandler extends
@@ -19,7 +19,7 @@ public class CmppCancelRequestMessageHandler extends
 	private PacketType packetType;
 	
 	public CmppCancelRequestMessageHandler() {
-		this(PacketType.CMPPCANCELREQUEST);
+		this(CmppPacketType.CMPPCANCELREQUEST);
 	}
 
 	public CmppCancelRequestMessageHandler(PacketType packetType) {
@@ -30,18 +30,17 @@ public class CmppCancelRequestMessageHandler extends
 	 * @see org.jboss.netty.channel.SimpleChannelUpstreamHandler#messageReceived(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.MessageEvent)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
-		Message<ChannelBuffer> message = (Message<ChannelBuffer>) e.getMessage();
+		Message message = (Message) e.getMessage();
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()){
             super.messageReceived(ctx, e);
             return;
         }		
         
-        CmppCancelRequestMessage<ChannelBuffer> requestMessage = (CmppCancelRequestMessage<ChannelBuffer>) message;
-		CmppCancelResponseMessage<ChannelBuffer> responseMessage = new CmppCancelResponseMessage<ChannelBuffer>();
+        CmppCancelRequestMessage requestMessage = (CmppCancelRequestMessage) message;
+		CmppCancelResponseMessage responseMessage = new CmppCancelResponseMessage();
 		
 		responseMessage.setRequest(requestMessage);
 		

@@ -1,9 +1,11 @@
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppConnectResponse;
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
@@ -18,7 +20,7 @@ public class CmppConnectResponseMessageDecoder extends OneToOneDecoder {
      * 
      */
     public CmppConnectResponseMessageDecoder() {
-        this(PacketType.CMPPCONNECTRESPONSE);
+        this(CmppPacketType.CMPPCONNECTRESPONSE);
     }
     public CmppConnectResponseMessageDecoder(PacketType packetType) {
         this.packetType = packetType;
@@ -28,22 +30,21 @@ public class CmppConnectResponseMessageDecoder extends OneToOneDecoder {
      * @see org.jboss.netty.handler.codec.oneone.OneToOneDecoder#decode(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
      */
     @Override
-    @SuppressWarnings("unchecked")
     protected Object decode(ChannelHandlerContext ctx, Channel channel,
             Object msg) throws Exception {
-        Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+        Message message = (Message) msg;
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()) return msg;
-        CmppConnectResponseMessage<ChannelBuffer> responseMessage = new CmppConnectResponseMessage<ChannelBuffer>();
+        CmppConnectResponseMessage responseMessage = new CmppConnectResponseMessage();
         
         responseMessage.setBodyBuffer(message.getBodyBuffer());
         responseMessage.setHeader(message.getHeader());
         
-        ChannelBuffer bodyBuffer = message.getBodyBuffer().copy();
+        ChannelBuffer bodyBuffer = ChannelBuffers.copiedBuffer(message.getBodyBuffer());
         
         responseMessage.setStatus(bodyBuffer.readUnsignedInt());
  		responseMessage.setAuthenticatorISMG(bodyBuffer.readBytes(
-				PacketStructure.ConnectResponse.AUTHENTICATORISMG.getLength())
+				CmppConnectResponse.AUTHENTICATORISMG.getLength())
 				.array());
         responseMessage.setVersion(bodyBuffer.readUnsignedByte());
         return responseMessage;

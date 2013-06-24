@@ -3,16 +3,23 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.DefaultServerSessionConfigFactory;
+import me.huzorro.gateway.SessionConfig;
+
 /**
- * @author huzorro
- * @param <T>
+ * 
+ * @author huzorro(huzorro@gmail.com)
  *
+ * @param <T>
  */
 public class DownstreamServerSessionConfigFactory<T> extends
 		DefaultServerSessionConfigFactory<T> {
-
-	public DownstreamServerSessionConfigFactory() {
-		super();
+	/**
+	 * 
+	 * @param defaultSessionConfig
+	 */
+	public DownstreamServerSessionConfigFactory(SessionConfig defaultSessionConfig) {
+		super(defaultSessionConfig);
 	}
 	
 }

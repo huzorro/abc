@@ -6,7 +6,8 @@ package me.huzorro.gateway;
 import java.nio.ByteBuffer;
 
 /**
- * @author huzorro
+ * 
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public final class DefaultMsgIdUtil {

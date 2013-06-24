@@ -3,16 +3,18 @@
  */
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppDeliverResponse;
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class CmppDeliverResponseMessageDecoder extends OneToOneDecoder {
@@ -21,7 +23,7 @@ public class CmppDeliverResponseMessageDecoder extends OneToOneDecoder {
 	 * 
 	 */
 	public CmppDeliverResponseMessageDecoder() {
-		this(PacketType.CMPPDELIVERRESPONSE);
+		this(CmppPacketType.CMPPDELIVERRESPONSE);
 	}
 
 	public CmppDeliverResponseMessageDecoder(PacketType packetType) {
@@ -31,21 +33,20 @@ public class CmppDeliverResponseMessageDecoder extends OneToOneDecoder {
 	 * @see org.jboss.netty.handler.codec.oneone.OneToOneDecoder#decode(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected Object decode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
-        Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+        Message message = (Message) msg;
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(packetType.getCommandId() != commandId) return msg;	
         
-        CmppDeliverResponseMessage<ChannelBuffer> responseMessage = new CmppDeliverResponseMessage<ChannelBuffer>();
+        CmppDeliverResponseMessage responseMessage = new CmppDeliverResponseMessage();
         responseMessage.setBodyBuffer(message.getBodyBuffer());
         responseMessage.setHeader(message.getHeader());
         
-        ChannelBuffer bodyBuffer = message.getBodyBuffer().copy();
+        ChannelBuffer bodyBuffer = ChannelBuffers.copiedBuffer(message.getBodyBuffer());
         
 		responseMessage.setMsgId(DefaultMsgIdUtil.bytes2MsgId(bodyBuffer
-				.readBytes(PacketStructure.DeliverResponse.MSGID.getLength())
+				.readBytes(CmppDeliverResponse.MSGID.getLength())
 				.array()));
 		responseMessage.setResult(0L);
 		

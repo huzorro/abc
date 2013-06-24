@@ -1,5 +1,6 @@
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -18,7 +19,7 @@ public class CmppConnectResponseMessageEncoder extends OneToOneEncoder {
      * 
      */
     public CmppConnectResponseMessageEncoder() {
-        this(PacketType.CMPPCONNECTRESPONSE);
+        this(CmppPacketType.CMPPCONNECTRESPONSE);
     }
     public CmppConnectResponseMessageEncoder(PacketType packetType) {
         this.packetType = packetType;
@@ -28,15 +29,14 @@ public class CmppConnectResponseMessageEncoder extends OneToOneEncoder {
      * @see org.jboss.netty.handler.codec.oneone.OneToOneEncoder#encode(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
      */
     @Override
-    @SuppressWarnings("unchecked")
     protected Object encode(ChannelHandlerContext ctx, Channel channel,
             Object msg) throws Exception {  
-        if(!(msg instanceof Message<?>)) return msg;
-        Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+        if(!(msg instanceof Message)) return msg;
+        Message message = (Message) msg;
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()) return msg;
         
-        CmppConnectResponseMessage<ChannelBuffer> responseMessage = (CmppConnectResponseMessage<ChannelBuffer>) msg;
+        CmppConnectResponseMessage responseMessage = (CmppConnectResponseMessage) msg;
 
         ChannelBuffer bodyBuffer = ChannelBuffers.dynamicBuffer();
         
@@ -44,7 +44,7 @@ public class CmppConnectResponseMessageEncoder extends OneToOneEncoder {
         bodyBuffer.writeBytes(responseMessage.getAuthenticatorISMG());
         bodyBuffer.writeByte(responseMessage.getVersion());
         
-        message.setBodyBuffer(bodyBuffer);
+        message.setBodyBuffer(bodyBuffer.copy().array());
         
         ChannelBuffer messageBuffer = ChannelBuffers.dynamicBuffer();
         

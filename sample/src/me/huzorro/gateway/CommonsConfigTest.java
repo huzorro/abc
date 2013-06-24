@@ -8,7 +8,10 @@ import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -27,17 +30,27 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.hash.HashFunction;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
+import com.google.common.primitives.UnsignedInts;
+import com.google.common.primitives.UnsignedLong;
 import com.google.common.primitives.UnsignedLongs;
+import com.sun.jndi.url.corbaname.corbanameURLContextFactory;
 
 /**
  *
@@ -420,7 +433,7 @@ public class CommonsConfigTest {
 //    	（3）	序列号：bit16~bit1，顺序增加，步长为1，循环使用。
 //    	各部分如不能填满，左补零，右对齐。
     	
-    	out.println(String.format("%010d", 123));
+    	out.println(String.format("%010d", Long.parseLong("123")) + "@@@@");
     	
     	short sh = -123 & 0xff;
     	byte by = (byte)133;
@@ -465,6 +478,7 @@ public class CommonsConfigTest {
     	
     	byte[] _gb = Bytes.ensureCapacity("我a".getBytes(GlobalVars.defaultLocalCharset), 16, 0);
     	
+    	out.println(Hex.encodeHexString(_gb));
     	out.println(_gb.length);
     	
     	out.println(new String(_gb, GlobalVars.defaultTransportCharset).trim() + "//");
@@ -491,6 +505,101 @@ public class CommonsConfigTest {
     	lastKey = (lastKey == null) ? 1L : ++lastKey;
     	
     	out.println(lastKey);
+    	
+    	out.println(Math.min(10, 16));
+    	out.println("a" + String.format("%1$9s", "a"));
+    	out.println(String.format("%1$s%2$31s", "help", "print help for the platform"));
+    	
+    	String string = "stop -up all -down all -duplex all";
+    	List<String> list = new ArrayList<String>(Arrays.asList(StringUtils.split(string)));
+    	
+    	if(list.remove("start"))
+    	    	
+    	out.println(list);
+    	System.out.println(0x80000001);
+    	
+    	String msgIdsString = "1105142245000101002896";
+    	
+    	MsgId msgId = new MsgId(msgIdsString);
+    	out.println(msgIdsString);
+    	out.println(msgId);
+    	Iterable<String> configList = Splitter.on(",").split("1");
+		ImmutableListMultimap<String, String> transKeyMap = Multimaps.index(configList, new Function<String, String>() {
+			@Override
+			public String apply(String input) {
+				return input.split("=")[0];
+			}
+		});
+		
+		out.println(transKeyMap);
+		ListMultimap<String, String> transformed = Multimaps.transformValues(transKeyMap, new Function<String, String>() {
+
+			@Override
+			public String apply(String input) {
+				return input.contains("=") && input.split("=").length > 1 ? input.split("=")[1] : "";
+			}
+		});
+		
+		out.println(transformed.get("1"));
+		
+		String nodeHex = "00000000B2D0AC31";
+		
+		int node = Integer.parseInt("-1294875747");
+		out.println(node & 0xFFFFFFFFL);
+		out.println(String.format("%1$#x",  node & 0xFFFFFFFFL));
+		out.println(node);
+		try {
+			byte[] nodeByte = Hex.decodeHex(nodeHex.toCharArray());
+			out.println( ByteBuffer.wrap(nodeByte).getLong());
+			out.println(Strings.repeat("=", 80));
+			int guavaU1 = (int) ByteBuffer.wrap(nodeByte).getLong();
+			out.println(guavaU1);
+			out.println(ByteBuffer.wrap(nodeByte).getLong());
+			out.println(String.format("%1$#x", ByteBuffer.wrap(nodeByte).getLong()));
+			long guavaU2 = Ints.fromByteArray(nodeByte) & 0xFFFFFFFFL;
+			out.println(guavaU2);
+			out.println(Hex.encodeHexString(Longs.toByteArray(guavaU2)));
+			long guava4 = 0x80000006; 
+			out.println((int)guava4);
+			
+			long guava5 = 5L;
+			
+			out.println(String.format("%1$#010x",  guava5));
+			
+
+		} catch (DecoderException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		out.println(Strings.repeat("=", 80));
+		
+		byte[] testBytes = new byte[12];
+		ByteBuffer.wrap(testBytes).putInt(1).putInt(2).putInt(3);
+		
+		byte[] test1 = Arrays.copyOfRange(testBytes, 0, 4);
+		
+		out.println(ByteBuffer.wrap(test1).getInt());
+		byte[] test2 = Arrays.copyOfRange(testBytes, 4, 8);
+		out.println(ByteBuffer.wrap(test2).getInt());
+		byte[] test3 = Arrays.copyOfRange(testBytes, 8, 12);
+		out.println(ByteBuffer.wrap(test3).getInt());
+		
+		
+		out.println(Strings.repeat("=", 80));
+		
+		String snStr = "300002001711121804560000000001";
+		
+		SequenceNumber snObj = new SequenceNumber(snStr);
+		
+		out.println(snObj);
+		
+		byte[] seqNBytes = DefaultSequenceNumberUtil.sequenceN2Bytes(snObj);
+		
+		out.println(seqNBytes.length);
+		out.println(DefaultSequenceNumberUtil.bytes2sequenceN(seqNBytes));
+//        DefaultCommandService.stop( {"-up"});
+
 //    	System.out.println("@" + new String(
 //    			new byte[0],
 //    			GlobalVars.defaultTransportCharset) + "@");

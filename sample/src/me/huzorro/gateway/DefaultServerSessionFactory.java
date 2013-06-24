@@ -10,27 +10,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
 public class DefaultServerSessionFactory<T> implements Factory<T> {
     private static final Logger logger = LoggerFactory.getLogger(DefaultServerSessionFactory.class);
-    private BdbQueueMap<Long, MessageFuture> requestQueue;
-    private BdbQueueMap<Long, MessageFuture> responseQueue;
-    private BdbQueueMap<Long, MessageFuture> deliverQueue;
+    private BdbQueueMap<Long, QFuture<Message>> receiveQueue;
+    private BdbQueueMap<Long, QFuture<Message>> responseQueue;
+    private BdbQueueMap<Long, QFuture<Message>> deliverQueue;
     private ScheduledExecutorService scheduleExecutor;
     private SessionPool sessionPool;
     private SessionConfig config;
     private Channel channel;
+    /**
+     * 
+     * @param receiveQueue
+     * @param responseQueue
+     * @param deliverQueue
+     * @param scheduleExecutor
+     * @param sessionPool
+     */
 	public DefaultServerSessionFactory(            
-			BdbQueueMap<Long, MessageFuture> requestQueue,
-			BdbQueueMap<Long, MessageFuture> responseQueue,
-			BdbQueueMap<Long, MessageFuture>deliverQueue,
+			BdbQueueMap<Long, QFuture<Message>> receiveQueue,
+			BdbQueueMap<Long, QFuture<Message>> responseQueue,
+			BdbQueueMap<Long, QFuture<Message>>deliverQueue,
             ScheduledExecutorService scheduleExecutor,
             SessionPool sessionPool
             ) {
-        this.requestQueue = requestQueue;
+        this.receiveQueue = receiveQueue;
         this.responseQueue = responseQueue;
         this.deliverQueue = deliverQueue;
         this.scheduleExecutor = scheduleExecutor;
@@ -38,18 +46,25 @@ public class DefaultServerSessionFactory<T> implements Factory<T> {
 	}    
 	/**
 	 * 
+	 * @param config
+	 * @param receiveQueue
+	 * @param responseQueue
+	 * @param deliverQueue
+	 * @param scheduleExecutor
+	 * @param sessionPool
+	 * @param channel
 	 */
 	public DefaultServerSessionFactory(            
             SessionConfig config,
-            BdbQueueMap<Long, MessageFuture> requestQueue,
-            BdbQueueMap<Long, MessageFuture> responseQueue,
-            BdbQueueMap<Long, MessageFuture> deliverQueue,
+            BdbQueueMap<Long, QFuture<Message>> receiveQueue,
+            BdbQueueMap<Long, QFuture<Message>> responseQueue,
+            BdbQueueMap<Long, QFuture<Message>> deliverQueue,
             ScheduledExecutorService scheduleExecutor,
             SessionPool sessionPool,
             Channel channel
             ) {
         this.config = config;
-        this.requestQueue = requestQueue;
+        this.receiveQueue = receiveQueue;
         this.responseQueue = responseQueue;
         this.deliverQueue = deliverQueue;
         this.scheduleExecutor = scheduleExecutor;
@@ -74,20 +89,20 @@ public class DefaultServerSessionFactory<T> implements Factory<T> {
 	@SuppressWarnings("unchecked")
 	public T create() throws Exception {
         final DefaultSession session = new DefaultSession(channel, 
-                requestQueue, responseQueue, deliverQueue, scheduleExecutor, config);
-        session.getLoginFuture().addListener(new QFutureListener() {
+                deliverQueue, responseQueue, receiveQueue, scheduleExecutor, config);
+        session.getLoginFuture().addListener(new QFutureListener<Session>() {
             
             @Override
-            public void onComplete(QFuture future) {
-                // TODO Auto-generated method stub
+            public void onComplete(QFuture<Session> future) {
                 if(future.isSuccess())
                     try {
-                        sessionPool.put(session, true);
+                        sessionPool.put(future.getMaster(), true);
                     } catch (Exception e) {
-                        logger.error("put session to session pool failed {}", e);
+                        logger.error("put session to session pool failed", e.getCause());
                     }
             }
-        });		
+        });
+		if (sessionPool.size(config.getChannelIds()) >= config.getMaxSessions()) return null;
 		return (T) session;
 	}
 

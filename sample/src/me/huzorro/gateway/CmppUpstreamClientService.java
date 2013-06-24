@@ -1,10 +1,10 @@
 package me.huzorro.gateway;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.slf4j.Logger;
@@ -18,11 +18,28 @@ public class CmppUpstreamClientService implements Service {
     private final Logger logger = LoggerFactory.getLogger(CmppUpstreamClientService.class);
     private Map<String, SessionConfig> configMap;
     private Map<SessionConfig, ClientBootstrap> clientBootstrapMap;
-    private Map<Object, BdbQueueMap<Long, MessageFuture>> requestMsgQueueMap;
-    private Map<Object, BdbQueueMap<Long, MessageFuture>> responseMsgQueueMap;
-    private Map<Object, BdbQueueMap<Long, MessageFuture>> deliverMsgQueueMap;
+    private Map<Object, BdbQueueMap<Long, QFuture<Message>>> receiveMsgQueueMap;
+    private Map<Object, BdbQueueMap<Long, QFuture<Message>>> responseMsgQueueMap;
+    private Map<Object, BdbQueueMap<Long, QFuture<Message>>> deliverMsgQueueMap;
     private Map<SessionConfig, ScheduledExecutorService> scheduleExecutorMap;
-    private Map<Map<String, SessionConfig>, SessionPool> sessionPoolMap;   
+    private Map<SessionConfig, SessionPool> sessionPoolMap;
+    private Map<SessionConfig, Factory<Session>> sessionFactoryMap;
+    private List<String> configList;
+    private List<SessionConfig> upstreamServicesRunningList;
+    public CmppUpstreamClientService(
+            Map<String, SessionConfig> configMap,
+            Map<SessionConfig, ClientBootstrap> clientBootstrapMap,
+            Map<Object, BdbQueueMap<Long, QFuture<Message>>> receiveMsgQueueMap,
+            Map<Object, BdbQueueMap<Long, QFuture<Message>>> responseMsgQueueMap,
+            Map<Object, BdbQueueMap<Long, QFuture<Message>>> deliverMsgQueueMap,
+            Map<SessionConfig, ScheduledExecutorService> scheduleExecutorMap,
+            Map<SessionConfig, SessionPool>  sessionPoolMap,
+            Map<SessionConfig, Factory<Session>> sessionFactoryMap,
+            List<SessionConfig> upstreamServicesRunningList) {
+		this(configMap, clientBootstrapMap, receiveMsgQueueMap,
+				responseMsgQueueMap, deliverMsgQueueMap, scheduleExecutorMap,
+				sessionPoolMap, sessionFactoryMap, upstreamServicesRunningList, null);
+    }    
     /**
      * 
      * @param configMap
@@ -33,23 +50,29 @@ public class CmppUpstreamClientService implements Service {
      * @param messageQueueMap
      * @param scheduleExecutorMap
      * @param sessionPoolMap
+     * @param configList
      */
     public CmppUpstreamClientService(
             Map<String, SessionConfig> configMap,
             Map<SessionConfig, ClientBootstrap> clientBootstrapMap,
-            Map<Object, BdbQueueMap<Long, MessageFuture>> requestMsgQueueMap,
-            Map<Object, BdbQueueMap<Long, MessageFuture>> responseMsgQueueMap,
-            Map<Object, BdbQueueMap<Long, MessageFuture>> deliverMsgQueueMap,
+            Map<Object, BdbQueueMap<Long, QFuture<Message>>> receiveMsgQueueMap,
+            Map<Object, BdbQueueMap<Long, QFuture<Message>>> responseMsgQueueMap,
+            Map<Object, BdbQueueMap<Long, QFuture<Message>>> deliverMsgQueueMap,
             Map<SessionConfig, ScheduledExecutorService> scheduleExecutorMap,
-            Map<Map<String, SessionConfig>, SessionPool> sessionPoolMap
-            ) {
+            Map<SessionConfig, SessionPool>  sessionPoolMap,
+            Map<SessionConfig, Factory<Session>> sessionFactoryMap,
+            List<SessionConfig> upstreamServicesRunningList,
+            List<String> configList) {
         this.configMap = configMap;
         this.clientBootstrapMap = clientBootstrapMap;
-        this.requestMsgQueueMap = requestMsgQueueMap;
-        this.responseMsgQueueMap = requestMsgQueueMap;
+        this.receiveMsgQueueMap = receiveMsgQueueMap;
+        this.responseMsgQueueMap = responseMsgQueueMap;
         this.deliverMsgQueueMap = deliverMsgQueueMap;
         this.scheduleExecutorMap = scheduleExecutorMap;
         this.sessionPoolMap = sessionPoolMap;
+        this.sessionFactoryMap = sessionFactoryMap;
+        this.upstreamServicesRunningList = upstreamServicesRunningList;
+        this.configList = configList;
     }
 
     /* (non-Javadoc)
@@ -71,27 +94,35 @@ public class CmppUpstreamClientService implements Service {
     @Override
     public void process() throws Exception {
         for(SessionConfig config : configMap.values()) {
-            ChannelPipelineFactory pipelineFactory = new CmppUpstreamClientChannelPipelineFactory(config);
-            NettyTcpClientFactory<NettyTcpClient<ChannelFuture>> tcpClientFactory = 
-                    new NettyTcpClientFactory<NettyTcpClient<ChannelFuture>>(
-                            config.getHost(), config.getPort(), pipelineFactory, clientBootstrapMap.get(config));
-            NettyTcpClient<ChannelFuture> tcpClient = tcpClientFactory.create();
-            
-            CmppConnectRequestMessageFactory<CmppConnectRequestMessage<ChannelBuffer>> connectRequestMessageFacotry = 
-                    new CmppConnectRequestMessageFactory<CmppConnectRequestMessage<ChannelBuffer>>((CmppUpstreamSessionConfig) config);
-            CmppClientSessionFactory<CmppSession> sessionFactory = new CmppClientSessionFactory<CmppSession>(
-                    tcpClient, 
-                    connectRequestMessageFacotry, 
-                    config, 
-                    requestMsgQueueMap.get(config), 
-                    responseMsgQueueMap.get(config),
-                    deliverMsgQueueMap.get(config), 
-                    scheduleExecutorMap.get(config),
-                    sessionPoolMap.get(configMap));   
-            for(int i = 0; i < config.getMaxSessions(); i++) {
-                sessionFactory.create();
-            }
+        	if(configList != null && !configList.contains(config.getChannelIds())) continue;
+        	create(config);
+        	upstreamServicesRunningList.add(config);
         }
+         
+    }
+    
+    protected void create(SessionConfig config) throws Exception {
+        ChannelPipelineFactory pipelineFactory = new CmppUpstreamClientChannelPipelineFactory(config);
+        NettyTcpClientFactory<NettyTcpClient<ChannelFuture>> tcpClientFactory = 
+                new NettyTcpClientFactory<NettyTcpClient<ChannelFuture>>(
+                        config.getHost(), config.getPort(), pipelineFactory, clientBootstrapMap.get(config));
+        NettyTcpClient<ChannelFuture> tcpClient = tcpClientFactory.create();
+        
+        CmppConnectRequestMessageFactory<CmppConnectRequestMessage> connectRequestMessageFacotry = 
+                new CmppConnectRequestMessageFactory<CmppConnectRequestMessage>(config);
+        CmppClientSessionFactory<Session> sessionFactory = new CmppClientSessionFactory<Session>(
+                tcpClient, 
+                connectRequestMessageFacotry, 
+                config, 
+                deliverMsgQueueMap.get(config), 
+                responseMsgQueueMap.get(config),
+                receiveMsgQueueMap.get(config), 
+                scheduleExecutorMap.get(config),
+                sessionPoolMap.get(config));
+        sessionFactoryMap.put(config, sessionFactory);
+        for(int i = 0; i < config.getMaxSessions(); i++) {
+            sessionFactory.create();
+        }    	
     }
 
 }

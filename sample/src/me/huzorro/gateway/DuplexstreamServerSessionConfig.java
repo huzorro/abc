@@ -3,17 +3,12 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.DefaultServerSessionConfig;
+
 /**
- * @author huzorro
+ * 
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class DuplexstreamServerSessionConfig extends DefaultServerSessionConfig {
-
-	/**
-	 * 
-	 */
-	public DuplexstreamServerSessionConfig() {
-		// TODO Auto-generated constructor stub
-	}
-
 }

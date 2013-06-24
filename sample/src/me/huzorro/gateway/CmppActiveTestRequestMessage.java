@@ -3,20 +3,19 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
-public class CmppActiveTestRequestMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppActiveTestRequestMessage extends DefaultMessage {
 	private static final long serialVersionUID = 4496674961657465872L;
 	
 	public CmppActiveTestRequestMessage() {
-		this(PacketType.CMPPACTIVETESTREQUEST);
+		this(CmppPacketType.CMPPACTIVETESTREQUEST);
 	}
 	
 	public CmppActiveTestRequestMessage(PacketType packetType) {

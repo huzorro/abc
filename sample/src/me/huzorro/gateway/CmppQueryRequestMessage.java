@@ -3,29 +3,28 @@
  */
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppPacketType;
+import me.huzorro.gateway.cmpp.CmppQueryRequest;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.jboss.netty.buffer.ChannelBuffer;
-
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
-public class CmppQueryRequestMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppQueryRequestMessage extends DefaultMessage {
 	private static final long serialVersionUID = -7762194632879048169L;
 	private String time = String.format("%tY%<tm%<td",System.currentTimeMillis());
 	private short queryType = 0;
 	private String queryCode = new String(
-			new byte[PacketStructure.QueryRequest.QUERYCODE.getLength()],
+			new byte[CmppQueryRequest.QUERYCODE.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private String reserve = new String(
-			new byte[PacketStructure.QueryRequest.RESERVE.getLength()],
+			new byte[CmppQueryRequest.RESERVE.getLength()],
 			GlobalVars.defaultTransportCharset);
 	
 	public CmppQueryRequestMessage() {
-		this(PacketType.CMPPQUERYREQUEST);
+		this(CmppPacketType.CMPPQUERYREQUEST);
 	}
 	public CmppQueryRequestMessage(PacketType packetType) {
 		setPacketType(packetType);

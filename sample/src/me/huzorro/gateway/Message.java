@@ -5,27 +5,32 @@ import java.io.Serializable;
 import me.huzorro.gateway.cmpp.PacketType;
 
 /**
- *
+ * 
  * @author huzorro(huzorro@gmail.com)
+ *
  */
-public interface Message<T> extends Serializable  {
+public interface Message extends Serializable  {
 	public void setPacketType(PacketType packetType);
 	public PacketType getPacketType();
 	public void setTimestamp(long milliseconds);
 	public long getTimestamp();
 	public boolean isTerminationLife();
-    public void setConfig(SessionConfig config);
-    public SessionConfig getConfig(); 
-    public int incrementAndGetRequests();
+	public void setChannelIds(String channelIds);
+	public String getChannelIds();
+	public void setChildChannelIds(String childChannelIds);
+	public String getChildChannelIds();
+	public void setLifeTime(long lifeTime);
+	public long getLifeTime();
+    public int incrementAndGetRequests(int rN);
     public int getRequests();
-    public Message<?> setResponse(Message<?> message);
-    public Message<?> getResponse();
-    public Message<?> setRequest(Message<?> message);
-    public Message<?> getRequest(); 
-    public void setHeader(Header<T> head);
-    public Header<T> getHeader();  
-    public void setBodyBuffer(T buffer);
-    public T getBodyBuffer();
+    public Message setResponse(Message message);
+    public Message getResponse();
+    public Message setRequest(Message message);
+    public Message getRequest(); 
+    public void setHeader(Header head);
+    public Header getHeader();  
+    public void setBodyBuffer(byte[] buffer);
+    public byte[] getBodyBuffer();
     public void setAttachment(Object attachment);
     public Object getAttachment(); 
 }

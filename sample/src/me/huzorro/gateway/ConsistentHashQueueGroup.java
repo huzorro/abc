@@ -6,7 +6,8 @@ import java.util.concurrent.BlockingQueue;
 import com.google.common.hash.HashFunction;
 
 /**
- *
+ * 使用{@code queue}作为一致性{@code hashing}实现的节点
+ * <br>实现了数据在{@code queue group}之间分布式读取和写入
  * @author huzorro(huzorro@gmail.com)
  * @param <E>
  */
@@ -29,7 +30,7 @@ public class ConsistentHashQueueGroup<T extends BlockingQueue<E>, E> extends Con
         super(hashFunction, numberOfReplicas, nodes);
     }
     /**
-     * 
+     * put message to the queue group
      * @param message
      * @throws InterruptedException
      */
@@ -38,7 +39,7 @@ public class ConsistentHashQueueGroup<T extends BlockingQueue<E>, E> extends Con
     }
     
     /**
-     *  
+     * take message from the queue group 
      * @return E
      * @throws InterruptedException
      */
@@ -46,7 +47,7 @@ public class ConsistentHashQueueGroup<T extends BlockingQueue<E>, E> extends Con
         return this.get(System.nanoTime()).take();
     }
     /**
-     * 
+     * remove message from the queue group
      * @param message
      * @return boolean
      */

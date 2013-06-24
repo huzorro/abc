@@ -3,7 +3,6 @@
  */
 package me.huzorro.gateway;
 
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.timeout.IdleState;
 import org.jboss.netty.handler.timeout.IdleStateAwareChannelHandler;
@@ -29,7 +28,7 @@ public class CmppIdleStateHandler extends IdleStateAwareChannelHandler {
 	public void channelIdle(ChannelHandlerContext ctx, IdleStateEvent e)
 			throws Exception {
 		if(e.getState() == IdleState.ALL_IDLE) {
-			ctx.getChannel().write(new CmppActiveTestRequestMessage<ChannelBuffer>());
+			ctx.getChannel().write(new CmppActiveTestRequestMessage());
 		}
 		super.channelIdle(ctx, e);
 	}

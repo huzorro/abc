@@ -1,25 +1,25 @@
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppConnectResponse;
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.apache.commons.codec.binary.Hex;
-import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
  *
  * @author huzorro(huzorro@gmail.com)
  * @param <T>
  */
-public class CmppConnectResponseMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppConnectResponseMessage extends DefaultMessage{
     private static final long serialVersionUID = -5010314567064353091L;
     private long status = 3;
-    private byte[] authenticatorISMG = new byte[PacketStructure.ConnectResponse.AUTHENTICATORISMG.getLength()];
+    private byte[] authenticatorISMG = new byte[CmppConnectResponse.AUTHENTICATORISMG.getLength()];
     private short version = 0x30;
     
     
     public CmppConnectResponseMessage() {
-    	this(PacketType.CMPPCONNECTRESPONSE);
+    	this(CmppPacketType.CMPPCONNECTRESPONSE);
 	}
     public CmppConnectResponseMessage(PacketType packetType) {
     	setPacketType(packetType);

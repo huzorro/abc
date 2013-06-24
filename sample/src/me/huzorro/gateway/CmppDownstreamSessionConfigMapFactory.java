@@ -1,5 +1,6 @@
 package me.huzorro.gateway;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.CombinedConfiguration;
@@ -8,7 +9,7 @@ import org.apache.commons.configuration.CombinedConfiguration;
  *
  * @author huzorro(huzorro@gmail.com)
  */
-public class CmppDownstreamSessionConfigMapFactory<T extends Map<String, SessionConfig>, E extends CmppDownstreamSessionConfig> extends
+public class CmppDownstreamSessionConfigMapFactory<T extends Map<String, Map<String, E>>, E extends SessionConfig> extends
         DownstreamSessionConfigMapFactory<T, E> {
     
     /**
@@ -18,8 +19,9 @@ public class CmppDownstreamSessionConfigMapFactory<T extends Map<String, Session
     @SuppressWarnings("unchecked")
     public CmppDownstreamSessionConfigMapFactory(
             CombinedConfiguration configurationBuilder,
-            Map<String, SessionConfig> sessionConfigMap) {
-            this(configurationBuilder, sessionConfigMap, "downstream", (Class<E>) CmppDownstreamSessionConfig.class);
+            T sessionConfigMap,
+            List<String> configList) {
+            this(configurationBuilder, sessionConfigMap, "downstream", "cmppsession", (Class<E>) CmppDownstreamSessionConfig.class, configList);
     }
     /**
      * @param configurationBuilder
@@ -29,9 +31,12 @@ public class CmppDownstreamSessionConfigMapFactory<T extends Map<String, Session
      */
     public CmppDownstreamSessionConfigMapFactory(
             CombinedConfiguration configurationBuilder,
-            Map<String, SessionConfig> sessionConfigMap, String sessionType,
-            Class<E> sessionConfig) {
-        super(configurationBuilder, sessionConfigMap, sessionType, sessionConfig);
+            T sessionConfigMap, 
+            String sessionType,
+            String configName,
+            Class<E> sessionConfig,
+            List<String> configList) {
+        super(configurationBuilder, sessionConfigMap, sessionType, configName, sessionConfig, configList);
     }
 
 }

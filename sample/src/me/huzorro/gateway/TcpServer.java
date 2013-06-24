@@ -2,10 +2,11 @@
  * 
  */
 package me.huzorro.gateway;
-
 /**
- * @author huzorro
+ * 
+ * @author huzorro(huzorro@gmail.com)
  *
+ * @param <T>
  */
 public interface TcpServer<T> {
 	public T bind();

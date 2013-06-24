@@ -4,18 +4,19 @@
 package me.huzorro.gateway;
 
 /**
- * @author huzorro
- * @param <T>
+ * 
+ * @author huzorro(huzorro@gmail.com)
  *
+ * @param <T>
  */
 public class UpstreamServerSessionConfigFactory<T> extends
 		DefaultServerSessionConfigFactory<T> {
-
 	/**
 	 * 
+	 * @param defaultSessionConfig
 	 */
-	public UpstreamServerSessionConfigFactory() {
-		super();
+	public UpstreamServerSessionConfigFactory(SessionConfig defaultSessionConfig) {
+		super(defaultSessionConfig);
 	}
 
 }

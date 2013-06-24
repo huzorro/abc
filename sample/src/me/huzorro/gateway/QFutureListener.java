@@ -4,6 +4,6 @@ package me.huzorro.gateway;
  *
  * @author huzorro(huzorro@gmail.com)
  */
-public interface QFutureListener {
-    public void onComplete(QFuture future);
+public interface QFutureListener<T> {
+    public void onComplete(QFuture<T> future);
 }

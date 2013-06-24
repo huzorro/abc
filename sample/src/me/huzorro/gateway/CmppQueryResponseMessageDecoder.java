@@ -3,23 +3,25 @@
  */
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppPacketType;
+import me.huzorro.gateway.cmpp.CmppQueryResponse;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class CmppQueryResponseMessageDecoder extends OneToOneDecoder {
 	private PacketType packetType;
 	
 	public CmppQueryResponseMessageDecoder() {
-		this(PacketType.CMPPQUERYRESPONSE);
+		this(CmppPacketType.CMPPQUERYRESPONSE);
 	}
 
 	public CmppQueryResponseMessageDecoder(PacketType packetType) {
@@ -29,26 +31,25 @@ public class CmppQueryResponseMessageDecoder extends OneToOneDecoder {
 	 * @see org.jboss.netty.handler.codec.oneone.OneToOneDecoder#decode(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected Object decode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
-        Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+        Message message = (Message) msg;
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(packetType.getCommandId() != commandId) return msg;
         
-        CmppQueryResponseMessage<ChannelBuffer> responseMessage = new CmppQueryResponseMessage<ChannelBuffer>();
+        CmppQueryResponseMessage responseMessage = new CmppQueryResponseMessage();
        
         responseMessage.setBodyBuffer(message.getBodyBuffer());
         responseMessage.setHeader(message.getHeader());
-        ChannelBuffer bodyBuffer = message.getBodyBuffer().copy();		
+        ChannelBuffer bodyBuffer = ChannelBuffers.copiedBuffer(message.getBodyBuffer());		
         
 		responseMessage.setTime(bodyBuffer.readBytes(
-				PacketStructure.QueryResponse.TIME.getLength()).toString(
+				CmppQueryResponse.TIME.getLength()).toString(
 				GlobalVars.defaultTransportCharset));
 		
 		responseMessage.setQueryType(bodyBuffer.readUnsignedByte());
 		responseMessage.setQueryCode(bodyBuffer.readBytes(
-				PacketStructure.QueryResponse.QUERYCODE.getLength()).toString(
+				CmppQueryResponse.QUERYCODE.getLength()).toString(
 				GlobalVars.defaultTransportCharset));
 		responseMessage.setMtTLMsg(bodyBuffer.readUnsignedInt());
 		responseMessage.setMtTLUsr(bodyBuffer.readUnsignedInt());

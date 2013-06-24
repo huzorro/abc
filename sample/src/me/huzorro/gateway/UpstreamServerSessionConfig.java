@@ -4,16 +4,9 @@
 package me.huzorro.gateway;
 
 /**
- * @author huzorro
+ * 
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class UpstreamServerSessionConfig extends DefaultServerSessionConfig {
-
-	/**
-	 * 
-	 */
-	public UpstreamServerSessionConfig() {
-		// TODO Auto-generated constructor stub
-	}
-
 }

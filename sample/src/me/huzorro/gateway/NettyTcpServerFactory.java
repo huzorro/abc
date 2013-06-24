@@ -12,9 +12,10 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
 /**
- * @author huzorro
- * @param <T>
+ * 
+ * @author huzorro(huzorro@gmail.com)
  *
+ * @param <T>
  */
 public class NettyTcpServerFactory<T> implements Factory<T> {
     private InetSocketAddress serverAddress;
@@ -37,6 +38,14 @@ public class NettyTcpServerFactory<T> implements Factory<T> {
                 Executors.newCachedThreadPool(), 
                 Executors.newCachedThreadPool());
     }
+    /**
+     * 
+     * @param serverAddress
+     * @param channelPipelineFactory
+     * @param bootstrap
+     * @param boss
+     * @param work
+     */
     public NettyTcpServerFactory(InetSocketAddress serverAddress, 
             ChannelPipelineFactory channelPipelineFactory,
             ServerBootstrap bootstrap,

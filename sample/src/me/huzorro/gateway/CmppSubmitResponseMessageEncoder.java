@@ -3,6 +3,7 @@
  */
 package me.huzorro.gateway;
 
+import me.huzorro.gateway.cmpp.CmppPacketType;
 import me.huzorro.gateway.cmpp.PacketType;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -12,7 +13,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  *
  */
 public class CmppSubmitResponseMessageEncoder extends OneToOneEncoder {
@@ -21,7 +22,7 @@ public class CmppSubmitResponseMessageEncoder extends OneToOneEncoder {
 	 * 
 	 */
 	public CmppSubmitResponseMessageEncoder() {
-		this(PacketType.CMPPSUBMITRESPONSE);
+		this(CmppPacketType.CMPPSUBMITRESPONSE);
 	}
 	
 	public CmppSubmitResponseMessageEncoder(PacketType packetType) {
@@ -33,21 +34,20 @@ public class CmppSubmitResponseMessageEncoder extends OneToOneEncoder {
 	 * @see org.jboss.netty.handler.codec.oneone.OneToOneEncoder#encode(org.jboss.netty.channel.ChannelHandlerContext, org.jboss.netty.channel.Channel, java.lang.Object)
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	protected Object encode(ChannelHandlerContext ctx, Channel channel,
 			Object msg) throws Exception {
-	    if(!(msg instanceof Message<?>)) return msg;
-		Message<ChannelBuffer> message = (Message<ChannelBuffer>) msg;
+	    if(!(msg instanceof Message)) return msg;
+		Message message = (Message) msg;
         long commandId = ((Long) message.getHeader().getCommandId()).longValue();
         if(commandId != packetType.getCommandId()) return msg;
         
-        CmppSubmitResponseMessage<ChannelBuffer> responseMessage = new CmppSubmitResponseMessage<ChannelBuffer>();
+        CmppSubmitResponseMessage responseMessage = (CmppSubmitResponseMessage)message;
         
         ChannelBuffer bodyBuffer = ChannelBuffers.dynamicBuffer();		
         
         bodyBuffer.writeBytes(DefaultMsgIdUtil.msgId2Bytes(responseMessage.getMsgId()));
         bodyBuffer.writeInt((int) responseMessage.getResult());
-        message.setBodyBuffer(bodyBuffer);
+        message.setBodyBuffer(bodyBuffer.copy().array());
         
         ChannelBuffer messageBuffer = ChannelBuffers.dynamicBuffer();
         

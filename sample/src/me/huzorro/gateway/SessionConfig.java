@@ -3,8 +3,9 @@ package me.huzorro.gateway;
 import org.apache.commons.configuration.XMLConfiguration;
 
 /**
- *
+ * 
  * @author huzorro(huzorro@gmail.com)
+ *
  */
 public interface SessionConfig  {
     public String getChannelIds();
@@ -31,6 +32,10 @@ public interface SessionConfig  {
     public long getIdleTime();
     public void setLifeTime(long seconds);
     public long getLifeTime();
+    public void setPoolCheckoutTimeout(long milliseconds);
+    public long getPoolCheckoutTimeout();
+    public void setPoolWatchTime(long seconds);
+    public long getPoolWatchTime();    
     public void setMaxRetry(int maxRetry);
     public int getMaxRetry();
     public void setRetryWaitTime(long seconds);
@@ -45,19 +50,21 @@ public interface SessionConfig  {
     public int getScheduleThreadNum();
     
     
-    public String getRequestQueueName();
-    public void setRequestQueueName(String queueName);
+    public String getReceiveQueueName();
+    public void setReceiveQueueName(String queueName);
     public String getResponseQueueName();
     public void setResponseQueueName(String queueName);
     public String getDeliverQueueName();
     public void setDeliverQueueName(String queueName);  
+    public void setReserveQueueName(String queueName);
+    public String getReserveQueueName();
     
-    
-    public void setRequestQueuePathHome(String pathHome);
-    public String getRequestQueuePathHome();
+    public void setReceiveQueuePathHome(String pathHome);
+    public String getReceiveQueuePathHome();
     public void setResponseQueuePathHome(String pathHome);
     public String getResponseQueuePathHome();
     public void setDeliverQueuePathHome(String pathHome);
     public String getDeliverQueuePathHome();
-    
+    public void setReserveQueuePathHome(String pathHome);
+    public String getReserveQueuePathName();
 }

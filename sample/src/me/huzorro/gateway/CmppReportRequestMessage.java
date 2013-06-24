@@ -5,24 +5,22 @@ package me.huzorro.gateway;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
-
-import org.jboss.netty.buffer.ChannelBuffer;
+import me.huzorro.gateway.cmpp.CmppReportRequest;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
-public class CmppReportRequestMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppReportRequestMessage extends DefaultMessage {
     private static final long serialVersionUID = -4631945859346437882L;
     private MsgId msgId = new MsgId();
 	private String stat = new String(
-			new byte[PacketStructure.ReportRequest.STAT.getLength()],
+			new byte[CmppReportRequest.STAT.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private String submitTime, doneTime = String.format("%ty%<tm%<td%<tH%<tM", System.currentTimeMillis());
 	private String destterminalId = new String(
-			new byte[PacketStructure.ReportRequest.DESTTERMINALID.getLength()],
+			new byte[CmppReportRequest.DESTTERMINALID.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private final static AtomicLong atomicLong = new AtomicLong(); 
 	private long smscSequence = (atomicLong.compareAndSet(Integer.MAX_VALUE, 0)

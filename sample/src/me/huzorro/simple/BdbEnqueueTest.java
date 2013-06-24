@@ -36,8 +36,8 @@ public class BdbEnqueueTest {
 	public static void main(String[] args) {
 		BdbEnvironment bdbEnvironment = new BdbEnvironment("Z:\\");
 		BdbEnvironment bdbEnvironment2 = new BdbEnvironment("Z:\\");
-		final BdbMessageQueue<Message<ChannelBuffer>> bdbMessageQueue = new BdbMessageQueue<Message<ChannelBuffer>>(bdbEnvironment, "message");
-		final BdbMessageQueue<Message<ChannelBuffer>> _bdbMessageQueue = new BdbMessageQueue<Message<ChannelBuffer>>(bdbEnvironment2, "message");
+		final BdbMessageQueue<Message> bdbMessageQueue = new BdbMessageQueue<Message>(bdbEnvironment, "message");
+		final BdbMessageQueue<Message> _bdbMessageQueue = new BdbMessageQueue<Message>(bdbEnvironment2, "message");
 		
 		out.println(bdbEnvironment.getEnvironment().getConfig().isConfigParamSet("je.log.fileMax"));
 		out.println(bdbEnvironment.getEnvironment().getConfig());

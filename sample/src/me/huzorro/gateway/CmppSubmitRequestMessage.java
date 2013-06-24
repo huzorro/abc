@@ -1,16 +1,15 @@
 package me.huzorro.gateway;
 
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppPacketType;
+import me.huzorro.gateway.cmpp.CmppSubmitRequest;
 import me.huzorro.gateway.cmpp.PacketType;
-
-import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
  *
  * @author huzorro(huzorro@gmail.com)
  * @param <T>
  */
-public class CmppSubmitRequestMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppSubmitRequestMessage extends DefaultMessage {
     private static final long serialVersionUID = 1369427662600486133L;
     private MsgId msgid = new MsgId();
     private short pktotal = 1;
@@ -18,48 +17,48 @@ public class CmppSubmitRequestMessage<T extends ChannelBuffer> extends DefaultMe
     private short registeredDelivery = 1;
     private short msglevel = 1;
 	private String serviceId = new String(
-			new byte[PacketStructure.SubmitRequest.SERVICEID.getLength()],
+			new byte[CmppSubmitRequest.SERVICEID.getLength()],
 			GlobalVars.defaultTransportCharset);
     private short feeUserType = 3;
 	private String feeterminalId = new String(
-			new byte[PacketStructure.SubmitRequest.FEETERMINALID.getLength()],
+			new byte[CmppSubmitRequest.FEETERMINALID.getLength()],
 			GlobalVars.defaultTransportCharset);
     private short feeterminaltype = 0;
     private short tppId = 0;
     private short tpudhi = 0;
     private short msgFmt = 15;
 	private String msgsrc = new String(
-			new byte[PacketStructure.SubmitRequest.MSGSRC.getLength()],
+			new byte[CmppSubmitRequest.MSGSRC.getLength()],
 			GlobalVars.defaultTransportCharset);
     private String feeType = "01";
 	private String feeCode = new String(
-			new byte[PacketStructure.SubmitRequest.FEECODE.getLength()],
+			new byte[CmppSubmitRequest.FEECODE.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private String valIdTime = new String(
-			new byte[PacketStructure.SubmitRequest.VALIDTIME.getLength()],
+			new byte[CmppSubmitRequest.VALIDTIME.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private String atTime = new String(
-			new byte[PacketStructure.SubmitRequest.ATTIME.getLength()],
+			new byte[CmppSubmitRequest.ATTIME.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private String srcId = new String(
-			new byte[PacketStructure.SubmitRequest.SRCID.getLength()],
+			new byte[CmppSubmitRequest.SRCID.getLength()],
 			GlobalVars.defaultTransportCharset);
     private short destUsrtl = 1;
 	private String destterminalId = new String(
-			new byte[PacketStructure.SubmitRequest.DESTTERMINALID.getLength()],
+			new byte[CmppSubmitRequest.DESTTERMINALID.getLength()],
 			GlobalVars.defaultTransportCharset);
     private short destterminaltype = 0;
-    private short msgLength = 140;
+    private short msgLength = 120;
 	private String msgContent = new String(new byte[msgLength],
 			GlobalVars.defaultTransportCharset);
 	private String linkID = new String(
-			new byte[PacketStructure.SubmitRequest.LINKID.getLength()],
+			new byte[CmppSubmitRequest.LINKID.getLength()],
 			GlobalVars.defaultTransportCharset);
 	
 	private byte[] msgContentBytes = new byte[msgLength];
 	
 	public CmppSubmitRequestMessage() {
-		this(PacketType.CMPPSUBMITREQUEST);
+		this(CmppPacketType.CMPPSUBMITREQUEST);
 	}
 	public CmppSubmitRequestMessage(PacketType packetType) {
 		setPacketType(packetType);

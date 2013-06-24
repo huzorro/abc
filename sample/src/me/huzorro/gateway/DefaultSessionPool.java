@@ -7,6 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,41 +21,38 @@ public class DefaultSessionPool implements SessionPool {
     private ConcurrentMap<Object, BlockingQueue<Session>> pool = new ConcurrentHashMap<Object, BlockingQueue<Session>>();
     private ConcurrentMap<Object, BlockingQueue<Session>> sessionGroup = new ConcurrentHashMap<Object, BlockingQueue<Session>>();
     
-    /**
-     * 
-     */
     public DefaultSessionPool() {        
     }
     
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionPool#take(me.huzorro.gateway.SessionConfig)
-     */
     @Override
     public Session take(Object channelIds) throws InterruptedException {
-        return pool.get(channelIds).take();
+    	while(true) {
+    		if(pool.get(channelIds) != null) return pool.get(channelIds).take();    				
+    	}
     }
 	@Override
 	public Session checkout(Object channelIds) throws Exception {
-		BlockingQueue<Session> queueOfPool = pool.get(channelIds);
-		for(Session session : queueOfPool) {
-			if(null == session || session.isClosed()) {
-				queueOfPool.remove(session);
-				continue;
-			}
-			if(null != session && !session.isWindowFull()) return queueOfPool.take();
+		
+		while(true) {
+			if(pool.get(channelIds) != null) return pool.get(channelIds).poll();
 		}
-		return null;
+
+	}
+	
+	@Override
+	public Session checkout(Object channelIds, long timeout, TimeUnit timeUnit)
+			throws Exception {
+		while(true) {
+			if(pool.get(channelIds) != null) return pool.get(channelIds).poll(timeout, timeUnit);
+		}
 	}
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionPool#put(me.huzorro.gateway.Session)
-     */
     @Override
     public void put(final Session session, boolean channelIdsAsKey) throws InterruptedException {
-        session.getCloseFuture().addListener(new QFutureListener() {
+        session.getCloseFuture().addListener(new QFutureListener<Session>() {
             @Override
-            public void onComplete(QFuture future) {
-                if(future.isSuccess()) remove(session);
+            public void onComplete(QFuture<Session> future) {
+                if(future.isSuccess()) remove(future.getMaster());
             }
         });
         Object asKey = channelIdsAsKey ? 
@@ -77,24 +75,19 @@ public class DefaultSessionPool implements SessionPool {
 	@Override
 	public void checkin(Session session, boolean channelIdsAsKey)
 			throws Exception {
+		if(null == session) return;
         Object asKey = channelIdsAsKey ? 
                 session.getConfig().getChannelIds() : 
                     session.getConfig();
         BlockingQueue<Session> queueOfPool = pool.get(asKey);
         queueOfPool.put(session);
 	}  
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionPool#remove(me.huzorro.gateway.SessionConfig, me.huzorro.gateway.Session)
-     */
     @Override
     public void remove(Session session) {
         sessionGroup.get(session.getConfig().getChannelIds()).remove(session);
         pool.get(session.getConfig().getChannelIds()).remove(session);
     }
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionPool#close()
-     */
     @Override
     public void close() throws Exception {
         for(BlockingQueue<Session> queueOfPool : sessionGroup.values()) {
@@ -104,9 +97,6 @@ public class DefaultSessionPool implements SessionPool {
         }
     }
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionPool#close(me.huzorro.gateway.SessionConfig)
-     */
     @Override
     public void close(Object channelIds) throws Exception {
         BlockingQueue<Session> queueOfGroup = sessionGroup.get(channelIds);
@@ -115,9 +105,6 @@ public class DefaultSessionPool implements SessionPool {
         }
     }
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionPool#size()
-     */
     @Override
     public Map<Object, Integer> size() {
         Map<Object, Integer> sizeMap = new HashMap<Object, Integer>();
@@ -128,12 +115,11 @@ public class DefaultSessionPool implements SessionPool {
         return sizeMap;
     }
 
-    /* (non-Javadoc)
-     * @see me.huzorro.gateway.SessionPool#size(me.huzorro.gateway.SessionConfig)
-     */
     @Override
     public int size(Object channelIds) {
-        return sessionGroup.get(channelIds).size();
+		return sessionGroup.get(channelIds) == null 
+				? 0 
+				:sessionGroup.get(channelIds).size();
     }
 
 }

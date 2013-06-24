@@ -3,41 +3,41 @@
  */
 package me.huzorro.gateway;
 
-import java.util.Arrays;
-
-import me.huzorro.gateway.cmpp.PacketStructure;
+import me.huzorro.gateway.cmpp.CmppDeliverRequest;
+import me.huzorro.gateway.cmpp.CmppPacketType;
+import me.huzorro.gateway.cmpp.CmppReportRequest;
 import me.huzorro.gateway.cmpp.PacketType;
 
-import org.jboss.netty.buffer.ChannelBuffer;
+import org.apache.commons.codec.binary.Hex;
 
 /**
- * @author huzorro
+ * @author huzorro(huzorro@gmail.com)
  * @param <T>
  *
  */
-public class CmppDeliverRequestMessage<T extends ChannelBuffer> extends DefaultMessage<T> {
+public class CmppDeliverRequestMessage extends DefaultMessage {
 	private static final long serialVersionUID = 1906062473217979916L;
 	private MsgId msgId = new MsgId();
 	private String destId = new String(
-			new byte[PacketStructure.DeliverRequest.DESTID.getLength()],
+			new byte[CmppDeliverRequest.DESTID.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private String serviceid = new String(
-			new byte[PacketStructure.DeliverRequest.SERVICEID.getLength()],
+			new byte[CmppDeliverRequest.SERVICEID.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private short tppid = 0;
 	private short tpudhi = 0;
 	private short msgfmt = 15;
 	private String srcterminalId = new String(
-			new byte[PacketStructure.DeliverRequest.SRCTERMINALID.getLength()],
+			new byte[CmppDeliverRequest.SRCTERMINALID.getLength()],
 			GlobalVars.defaultTransportCharset);
 	private short srcterminalType = 0;
 	private short registeredDelivery = 0;
 	private short msgLength = 140;
 	private String msgContent = new String(new byte[msgLength],
 			GlobalVars.defaultTransportCharset);
-    private CmppReportRequestMessage<ChannelBuffer> reportRequestMessage = new CmppReportRequestMessage<ChannelBuffer>();
+    private CmppReportRequestMessage reportRequestMessage = new CmppReportRequestMessage();
 	private String linkid = new String(
-			new byte[PacketStructure.DeliverRequest.LINKID.getLength()],
+			new byte[CmppDeliverRequest.LINKID.getLength()],
 			GlobalVars.defaultTransportCharset);
 	
 	
@@ -45,7 +45,7 @@ public class CmppDeliverRequestMessage<T extends ChannelBuffer> extends DefaultM
 	private boolean isReport = false; 
 	
 	public CmppDeliverRequestMessage() {
-		this(PacketType.CMPPDELIVERREQUEST);
+		this(CmppPacketType.CMPPDELIVERREQUEST);
 	}
 	
 	public CmppDeliverRequestMessage(PacketType packetType) {
@@ -189,16 +189,16 @@ public class CmppDeliverRequestMessage<T extends ChannelBuffer> extends DefaultM
     /**
      * @return the reportRequestMessage
      */
-    public CmppReportRequestMessage<ChannelBuffer> getReportRequestMessage() {
+    public CmppReportRequestMessage getReportRequestMessage() {
         return reportRequestMessage;
     }
     /**
      * @param reportRequestMessage the reportRequestMessage to set
      */
     public void setReportRequestMessage(
-            CmppReportRequestMessage<ChannelBuffer> reportRequestMessage) {
+            CmppReportRequestMessage reportRequestMessage) {
         this.reportRequestMessage = reportRequestMessage;
-        setMsgLength((short) PacketStructure.ReportRequest.values()[0].getBodyLength()); 
+        setMsgLength((short) CmppReportRequest.values()[0].getBodyLength()); 
     }
     /**
      * @return the linkid
@@ -238,18 +238,19 @@ public class CmppDeliverRequestMessage<T extends ChannelBuffer> extends DefaultM
 		this.isReport = isReport;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return String
-				.format("CmppDeliverRequestMessage [msgId=%s, destId=%s, serviceid=%s, tppid=%s, tpudhi=%s, msgfmt=%s, srcterminalId=%s, srcterminalType=%s, registeredDelivery=%s, msgLength=%s, msgContent=%s, reportRequestMessage=%s, linkid=%s, msgContentBytes=%s, isReport=%s]",
+				.format("CmppDeliverRequestMessage [msgId=%s, destId=%s, serviceid=%s, tppid=%s, tpudhi=%s, msgfmt=%s, srcterminalId=%s, srcterminalType=%s, registeredDelivery=%s, msgLength=%s, msgContent=%s, reportRequestMessage=%s, linkid=%s, msgContentBytes=%s, isReport=%s, getPacketType()=%s, getTimestamp()=%s, getChannelIds()=%s, getChildChannelIds()=%s, getLifeTime()=%s, isTerminationLife()=%s, getResponse()=%s, getRequests()=%s, getHeader()=%s, getBodyBuffer()=%s]",
 						msgId, destId, serviceid, tppid, tpudhi, msgfmt,
 						srcterminalId, srcterminalType, registeredDelivery,
 						msgLength, msgContent, reportRequestMessage, linkid,
-						Arrays.toString(msgContentBytes), isReport);
+						Hex.encodeHexString(msgContentBytes), isReport,
+						getPacketType(), getTimestamp(), getChannelIds(),
+						getChildChannelIds(), getLifeTime(),
+						isTerminationLife(), getResponse(), getRequests(),
+						getHeader(), Hex.encodeHexString(getBodyBuffer()));
 	}
-	
+
 		
 }
